@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>News House · {{ short_date }}</title>
+<script>/* before first paint, so a dark choice never flashes light: ?theme= wins, then the saved choice */
+try { var t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("nh.theme");
+  if (t === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}</script>
+<style>
+{{ css | safe }}
+</style>
+</head>
+<body data-feedback-url="/feedback" data-edition-id="{{ v.id }}">
+{%- macro chevron(up=False) -%}
+<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ 'M6 15l6-6 6 6' if up else 'M6 9l6 6 6-6' }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{%- endmacro -%}
+
+{%- macro cover(p, hide=False) -%}
+<div class="visual" data-kind="cover"{% if hide %} hidden{% endif %}>
+  <span class="label"{% if not p.label %} hidden{% endif %}>{{ p.label }}</span>
+  <span class="big{% if p.big | length > 6 %} long{% endif %}">{{ p.big }}</span>
+  <span class="line">{{ p.line }}</span>
+</div>
+{%- endmacro -%}
+
+{%- macro chart_body(p) -%}
+{% if p.unit %}<div class="panel-head"><span class="panel-unit">{{ p.unit }}</span></div>{% endif %}
+{% for b in p.bars %}
+<div class="bar-row">
+  <span class="bar-label">{{ b.label }}</span>
+  <div class="bar"><div class="bar-fill{% if b.key %} key{% endif %}" style="--w: {{ b.w }}%"></div></div>
+  <span class="bar-value">{{ b.value }}</span>
+</div>
+{% endfor %}
+{% if p.caption %}<p class="caption">{{ p.caption }}</p>{% endif %}
+{%- endmacro -%}
+
+{%- macro table_body(p, limit=none) -%}
+<span class="panel-label">{{ p.columns | join(' · ') }}</span>
+<div class="rows">
+{% for r in (p.table_rows if limit is none else p.table_rows[:limit]) %}
+  <div class="row{% if r.yours %} yours{% endif %}{% if r.new %} new{% endif %}">
+    <span class="row-label">{{ r.label }}{% if r.yours %} <span class="tag">yours</span>{% endif %}{% if r.new %} <span class="tag">new</span>{% endif %}</span>
+    <span class="row-figure"><span class="row-big {{ value_class(r.big) }}">{{ r.big }}</span>{% if r.small %}<span class="row-small">{{ r.small }}</span>{% endif %}</span>
+  </div>
+{% endfor %}
+</div>
+{% if limit is not none and p.table_rows | length > limit %}<p class="rows-more">+{{ p.table_rows | length - limit }} more rows in Expand</p>{% endif %}
+{%- endmacro -%}
+
+{%- macro timeline(p) -%}
+<div class="visual" data-kind="timeline">
+  <div class="tl-entry today">
+    <div class="tl-rail"><span class="tl-dot"></span>{% if p.chapters %}<span class="tl-line"></span>{% endif %}</div>
+    <div class="tl-text"><span class="tl-label">Today</span><p>{{ p.delta }}</p></div>
+  </div>
+  {% for ch in p.chapters | reverse %}
+  <div class="tl-entry">
+    <div class="tl-rail"><span class="tl-dot"></span>{% if not loop.last %}<span class="tl-line"></span>{% endif %}</div>
+    <div class="tl-text"><span class="tl-label">{{ ch.date }}</span><p>{{ ch.title }}</p></div>
+  </div>
+  {% endfor %}
+</div>
+{%- endmacro -%}
+
+{%- macro versus(p) -%}
+<div class="visual" data-kind="versus">
+  <div class="versus">
+    <div class="side for"><span class="side-label">For</span>{% for x in p['for'] %}<p>{{ x }}</p>{% endfor %}</div>
+    <div class="side against"><span class="side-label">Against</span>{% for x in p.against %}<p>{{ x }}</p>{% endfor %}</div>
+  </div>
+  {% if p.stands %}<p class="stands"><span class="stands-label">Where it stands</span> {{ p.stands }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro before_after(p) -%}
+<div class="visual" data-kind="before-after">
+  <div class="ba-row before"><span class="ba-label">Before</span><p>{{ p.before }}</p></div>
+  <div class="ba-row after"><span class="ba-label">After{% if p.effective %} · {{ p.effective }}{% endif %}</span><p>{{ p.after }}</p></div>
+  {% if p.applies_to %}<p class="ba-applies">Applies to {{ p.applies_to }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro quote(p) -%}
+<div class="visual" data-kind="quote">
+  <blockquote{% if p.text | length > 110 %} class="long"{% endif %}><span class="mark" aria-hidden="true">&ldquo;</span>{{ p.text }}</blockquote>
+  <p class="cite"><span class="who">{{ p.who }}</span>{% if p.where %} <span class="where">{{ p.where }}</span>{% endif %}</p>
+</div>
+{%- endmacro -%}
+
+{%- macro photo(p) -%}
+<div class="visual" data-kind="photo">
+  <img class="photo" src="{{ p.src }}" alt="{{ p.alt or '' }}" referrerpolicy="no-referrer">
+  {% if p.credit %}<span class="credit">{{ p.credit }}</span>{% endif %}
+  {% if p.fallback %}{{ cover(p.fallback, True) }}{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro pitch(p) -%}
+<div class="visual" data-kind="pitch">
+  <div class="pitch" aria-hidden="false">
+    <span class="mark-line" aria-hidden="true"></span><span class="mark-circle" aria-hidden="true"></span><span class="mark-box" aria-hidden="true"></span>
+    {% for row in (p.rows[:4]) | reverse %}
+    <div class="pitch-row">{% for pl in row %}<span class="player"><span class="disc" title="{{ pl.pos }}">{{ pl.pos }}</span><span class="pname">{{ pl.name }}</span></span>{% endfor %}</div>
+    {% endfor %}
+  </div>
+  {% if p.out %}<ul class="out">{% for o in p.out[:3] %}<li><span class="out-name">{{ o.name }}</span>{% if o.why %}<span class="out-why">&nbsp;· {{ o.why }}</span>{% endif %}</li>{% endfor %}</ul>{% endif %}
+  {% if p.note %}<p class="note">{{ p.note }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro number(p) -%}
+<div class="visual" data-kind="number">
+  <span class="nc-value{% if p.value | length > 7 %} long{% endif %}">{{ p.value }}</span>
+  <span class="nc-what">{{ p.what }}</span>
+  {% if p.bars %}<div class="nc-bars">{% for b in p.bars %}
+    <div class="bar-row"><span class="bar-label">{{ b.label }}</span><div class="bar"><div class="bar-fill{% if b.key %} key{% endif %}" style="--w: {{ b.w }}%"></div></div><span class="bar-value">{{ b.value }}</span></div>
+  {% endfor %}</div>
+  {% elif p.compare %}<span class="nc-vs">vs {{ p.compare.label }} <strong>{{ p.compare.value }}</strong></span>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro key_facts(p) -%}
+<div class="visual" data-kind="key-facts">
+  <dl class="kf{% if p.facts | length == 2 %} kf-2{% endif %}">
+    {% for f in p.facts %}<div class="kf-item"><dt class="label">{{ f.label }}</dt><dd class="kf-value{% if f.value | length >= 20 %} long{% endif %}">{{ f.value }}</dd></div>{% endfor %}
+  </dl>
+</div>
+{%- endmacro -%}
+
+{%- macro changes(p) -%}
+<div class="visual" data-kind="changes">
+  {% for r in p.rows %}<div class="ch-row"><span class="label">{{ r.what }}</span><span class="ch-change">{{ r.change }}</span></div>{% endfor %}
+  {% if p.bar %}<div class="ch-bar">
+    {%- if p.bar.from and p.bar.to -%}
+    <span class="ch-d">{{ p.bar['from'] }}</span><span class="ch-track">{% if p.bar.today is not none %}<span class="ch-today" style="--at: {{ p.bar.today }}%"><span class="ch-today-label">today</span></span>{% endif %}</span><span class="ch-d">{{ p.bar.to }}</span>
+    {%- elif p.bar.from -%}<span class="ch-d">From {{ p.bar['from'] }}</span>
+    {%- else -%}<span class="ch-d">Until {{ p.bar.to }}</span>{%- endif -%}
+  </div>{% endif %}
+  {% if p.where %}<p class="ch-where">{{ p.where }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro factsheet(p) -%}
+<div class="visual" data-kind="factsheet">
+  <ul class="fs">
+    {% for x in p.has %}<li class="fs-has"><span class="fs-mark" aria-hidden="true">✓</span>{{ x }}</li>{% endfor %}
+    {% for x in p.lacks or [] %}<li class="fs-lacks"><span class="fs-mark" aria-hidden="true">✗</span><span class="sr-only">Not: </span>{{ x }}</li>{% endfor %}
+  </ul>
+  {% if p.status or p.where or p.price %}<div class="fs-foot">{% if p.status %}<span class="pill">{{ p.status }}</span>{% endif %}{% if p.where %}<span>{{ p.where }}</span>{% endif %}{% if p.price %}<span class="fs-price">{{ p.price }}</span>{% endif %}</div>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro deal(p) -%}
+<div class="visual" data-kind="deal">
+  <div class="dl-row">
+    <span class="dl-side"><span class="label">{{ 'Investors' if p.kind == 'funding' else 'Buyer' if p.kind in ('acquisition', 'stake') else 'From' }}</span><span class="dl-name">{{ p['from'] }}</span></span>
+    <span class="dl-arrow" aria-hidden="true">{% if p.amount %}<span class="dl-amount">{{ p.amount }}</span>{% endif %}<span class="dl-line"></span></span>
+    <span class="dl-side"><span class="label">{{ 'Company' if p.kind == 'funding' else 'Target' }}</span><span class="dl-name">{{ p.to }}</span></span>
+  </div>
+  {% if p.amount %}<span class="sr-only">for {{ p.amount }}</span>{% endif %}
+  {% if p.to_does %}<p class="dl-does">{{ p.to_does }}</p>{% endif %}
+  {% if p.terms or p.status %}<div class="fs-foot">{% if p.status %}<span class="pill">{{ p.status }}</span>{% endif %}{% if p.terms %}<span>{{ p.terms }}</span>{% endif %}</div>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro availability(p) -%}
+<div class="visual" data-kind="availability">
+  <div class="av-head"><span class="av-player">{{ p.player }}</span>{% if p.status %}<span class="pill av-{{ p.status }}">{{ p.status }}</span>{% endif %}</div>
+  {% if p.reason or p['return'] %}<p class="av-why">{{ p.reason }}{% if p.reason and p['return'] %} · {% endif %}{% if p['return'] %}{{ p['return'] }}{% endif %}</p>{% endif %}
+  {% if p.fixtures %}<ul class="av-fixtures">{% for f in p.fixtures %}<li class="av-fx av-{{ f.plays or 'doubt' }}"><span class="av-mark" aria-hidden="true">{{ '✕' if f.plays == 'miss' else '✓' if f.plays == 'play' else '?' }}</span><span class="av-vs">{{ f.vs }}</span>{% if f.date %}<span class="av-date">{{ f.date }}</span>{% endif %}<span class="sr-only">: {{ {'miss': 'misses', 'play': 'plays'}.get(f.plays, 'doubtful') }}</span></li>{% endfor %}</ul>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro scoreline(p) -%}
+<div class="visual" data-kind="scoreline">
+  {% if p.competition %}<span class="label">{{ p.competition }}</span>{% endif %}
+  <div class="sl-row"><span class="sl-team">{{ p.home }}</span><span class="sl-score">{{ p.score[0] }}<span class="sl-dash">–</span>{{ p.score[1] }}</span><span class="sl-team sl-away">{{ p.away }}</span></div>
+  {% if p.scorers %}<div class="sl-scorers">
+    <ul>{% for g in p.scorers if g.side == 'home' %}<li>{{ g.name }}{% if g.minute %} <span class="sl-min">{{ g.minute }}</span>{% endif %}</li>{% endfor %}</ul>
+    <ul class="sl-away">{% for g in p.scorers if g.side == 'away' %}<li>{{ g.name }}{% if g.minute %} <span class="sl-min">{{ g.minute }}</span>{% endif %}</li>{% endfor %}</ul>
+  </div>{% endif %}
+  {% if p.note %}<p class="sl-note">{{ p.note }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro stakes(p) -%}
+<div class="visual" data-kind="stakes">
+  <div class="sk-head"><span class="sk-fixture">{{ p.fixture }}</span>{% if p.when %}<span class="sk-when">{{ p.when }}</span>{% endif %}</div>
+  {% for o in p.outcomes %}<div class="sk-row"><span class="label">If {{ o['if'] or 'not' }}</span><span class="sk-then">{{ o.then }}</span></div>{% endfor %}
+</div>
+{%- endmacro -%}
+
+{%- macro incident(p) -%}
+<div class="visual" data-kind="incident">
+  <p class="in-symptom">{{ p.symptom }}</p>
+  {% if p.affects %}<ul class="in-affects">{% for a in p.affects %}<li>{{ a }}</li>{% endfor %}</ul>{% endif %}
+  {% if p.sure or p.since %}<p class="in-sure">{% if p.since %}Since {{ p.since }}{% endif %}{% if p.since and p.sure %} · {% endif %}{{ p.sure }}</p>{% endif %}
+  {% if p.workaround %}<p class="in-work"><span class="label">Workaround</span> {{ p.workaround }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro countdown(p) -%}
+<div class="visual" data-kind="countdown">
+  <span class="cd-days">{{ p.label }}</span>
+  <span class="label">{{ p.date }}</span>
+  <p class="cd-what">{{ p.what }}</p>
+  {% if p['do'] %}<p class="cd-do">{{ p['do'] }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro case_(p) -%}
+<div class="visual" data-kind="case">
+  {% if p.court %}<span class="label">{{ p.court }}</span>{% endif %}
+  {% if p.asked %}<p class="cs-asked">{{ p.asked }}</p>{% endif %}
+  <ol class="cs-steps" style="--n: {{ p.steps | length }}">{% for st in p.steps %}<li class="{{ 'done' if st.done is sameas true else '' }}"><span class="cs-dot" aria-hidden="true"></span><span class="cs-label">{{ st.label }}</span>{% if st.date %}<span class="cs-date">{{ st.date }}</span>{% endif %}<span class="sr-only">{{ ' (done)' if st.done is sameas true else '' }}</span></li>{% endfor %}</ol>
+  {% if p.next %}<p class="cs-next"><span class="label">Next</span> {{ p.next }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro scale(p) -%}
+<div class="visual" data-kind="scale">
+  <span class="label">{{ 'GRAP' if p.scale == 'grap' else 'Air quality (CPCB)' }}</span>
+  <div class="sc-now{% if p.alarm %} alarm{% endif %}">{% if p.value is not none %}{{ p.value }} · {% endif %}{{ p.name }}</div>
+  <ol class="sc-steps">{% for st in p.steps %}<li class="{{ 'now' if st.now else '' }}{{ ' alarm' if st.now and p.alarm else '' }}"><span class="sc-bar" aria-hidden="true"></span><span class="sc-name">{{ st.name }}</span>{% if st.was %}<span class="sc-was">was</span>{% endif %}</li>{% endfor %}</ol>
+</div>
+{%- endmacro -%}
+
+{%- macro rumour(p) -%}
+<div class="visual" data-kind="rumour">
+  <span class="ru-player">{{ p.player }}</span>
+  <div class="ru-move"><span>{{ p['from'] }}</span><span class="ru-arrow" aria-hidden="true">→</span><span class="sr-only">to</span><span>{{ p.to }}</span>{% if p.fee %}<span class="ru-fee">{{ p.fee }}</span>{% endif %}</div>
+  <p class="ru-source">{{ p.tier }}{% if p.source %} · per {{ p.source }}{% endif %}</p>
+</div>
+{%- endmacro -%}
+
+{%- macro steps(p) -%}
+<div class="visual" data-kind="steps">
+  <ol class="stp">{% for st in p.steps %}<li><span class="stp-n" aria-hidden="true">{{ loop.index }}</span><span>{{ st }}</span></li>{% endfor %}</ol>
+</div>
+{%- endmacro -%}
+
+{%- macro visual(vis) -%}
+{%- if vis.kind == 'cover' -%}{{ cover(vis.payload) }}
+{%- elif vis.kind == 'number' -%}{{ number(vis.payload) }}
+{%- elif vis.kind == 'key-facts' -%}{{ key_facts(vis.payload) }}
+{%- elif vis.kind == 'changes' -%}{{ changes(vis.payload) }}
+{%- elif vis.kind == 'factsheet' -%}{{ factsheet(vis.payload) }}
+{%- elif vis.kind == 'deal' -%}{{ deal(vis.payload) }}
+{%- elif vis.kind == 'availability' -%}{{ availability(vis.payload) }}
+{%- elif vis.kind == 'scoreline' -%}{{ scoreline(vis.payload) }}
+{%- elif vis.kind == 'stakes' -%}{{ stakes(vis.payload) }}
+{%- elif vis.kind == 'incident' -%}{{ incident(vis.payload) }}
+{%- elif vis.kind == 'countdown' -%}{{ countdown(vis.payload) }}
+{%- elif vis.kind == 'case' -%}{{ case_(vis.payload) }}
+{%- elif vis.kind == 'scale' -%}{{ scale(vis.payload) }}
+{%- elif vis.kind == 'rumour' -%}{{ rumour(vis.payload) }}
+{%- elif vis.kind == 'steps' -%}{{ steps(vis.payload) }}
+{%- elif vis.kind == 'chart' -%}<div class="visual" data-kind="chart">{{ chart_body(vis.payload) }}</div>
+{%- elif vis.kind == 'table' -%}<div class="visual" data-kind="table">{{ table_body(vis.payload, 3) }}</div>
+{%- elif vis.kind == 'timeline' -%}{{ timeline(vis.payload) }}
+{%- elif vis.kind == 'versus' -%}{{ versus(vis.payload) }}
+{%- elif vis.kind == 'before-after' -%}{{ before_after(vis.payload) }}
+{%- elif vis.kind == 'quote' -%}{{ quote(vis.payload) }}
+{%- elif vis.kind == 'photo' -%}{{ photo(vis.payload) }}
+{%- elif vis.kind == 'pitch' -%}{{ pitch(vis.payload) }}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro arrow(left=False) -%}
+<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ 'M15 6l-6 6 6 6' if left else 'M9 6l6 6-6 6' }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{%- endmacro -%}
+
+{%- macro slide_body(s) -%}
+{%- set p = s.payload -%}
+{%- if s.kind == 'cover' -%}
+  <span class="label"{% if not p.label %} hidden{% endif %}>{{ p.label }}</span>
+  <span class="big{% if (p.big or '') | length > 6 %} long{% endif %}">{{ p.big }}</span>
+  <span class="slide-line">{{ p.line }}</span>
+{%- elif s.kind == 'table' -%}
+  {% if s.title %}<span class="slide-title">{{ s.title }}</span>{% endif %}
+  <div class="slide-rows">
+  {% for r in p.table_rows %}
+    <div class="slide-row"><span class="slide-row-label">{{ r.label }}</span><span class="slide-row-big{% if (r.big or '') | length > 6 %} long{% endif %} {{ value_class(r.big) }}">{{ r.big }}</span>{% if r.small %}<span class="slide-row-small">{{ r.small }}</span>{% endif %}</div>
+  {% endfor %}
+  </div>
+  {% for para in s.body_paras %}<p class="slide-note">{{ para }}</p>{% endfor %}
+{%- elif s.kind in ('key-facts', 'number', 'factsheet', 'deal', 'steps') -%}
+  {% if s.title %}<span class="slide-title">{{ s.title }}</span>{% endif %}
+  {% if p %}<div class="slide-format">{{ visual({'kind': s.kind, 'payload': p}) }}</div>{% endif %}
+  {% for para in s.body_paras %}<p class="slide-note">{{ para }}</p>{% endfor %}
+{%- elif s.kind == 'chart' -%}
+  {% if s.title %}<span class="slide-title">{{ s.title }}</span>{% endif %}
+  <div class="slide-chart">{{ chart_body(p) }}</div>
+  {% for para in s.body_paras %}<p class="slide-note">{{ para }}</p>{% endfor %}
+{%- else -%}
+  {% if s.title %}<span class="slide-title">{{ s.title }}</span>{% endif %}
+  <div class="slide-text">{% for para in s.body_paras %}<p>{{ para }}</p>{% endfor %}</div>
+  {% if s.kind == 'what-next' %}<span class="slide-hint">Expand for the full brief {{ chevron() }}</span>{% endif %}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro deck(c) -%}
+<div class="deck">
+  <div class="slides" role="group" aria-roledescription="carousel" aria-label="{{ c.headline }}">
+  {% for s in c.deck %}
+    <section class="slide" data-slide-kind="{{ s.kind }}" data-fill="{{ s.fill }}" aria-label="{{ loop.index }} of {{ loop.length }}">{{ slide_body(s) }}</section>
+  {% endfor %}
+  </div>
+  <button type="button" class="slide-prev" aria-label="Previous slide" hidden>{{ arrow(left=True) }}</button>
+  <button type="button" class="slide-next" aria-label="Next slide">{{ arrow() }}</button>
+  <div class="slide-meta">
+    <span class="slide-dots" aria-hidden="true">{% for s in c.deck %}<span{% if loop.first %} class="on"{% endif %}></span>{% endfor %}</span>
+    <span class="slide-count" aria-live="polite">1 / {{ c.deck | length }}</span>
+  </div>
+</div>
+{%- endmacro -%}
+
+{%- macro stack(c) -%}
+<div class="stack-block">
+  <span class="section-label">More on this story</span>
+  <div class="stack" data-fill="{{ c.world.name }}">
+    <div class="slides" role="group" aria-roledescription="carousel" aria-label="More on this story">
+    {% for m in c.stack %}
+      <section class="slide stack-slide" data-fill="{{ c.world.name }}" aria-label="{{ loop.index }} of {{ loop.length }}">
+        <span class="label">{{ m.source }}</span>
+        <h3 class="stack-headline">{{ m.headline }}</h3>
+        {% if m.line %}<p class="stack-line">{{ m.line }}</p>{% endif %}
+        {% if m.url %}<a class="stack-link" href="{{ m.url }}" target="_blank" rel="noopener">{% if m.source %}Read at {{ m.source }}{% else %}Read the article{% endif %}</a>{% endif %}
+      </section>
+    {% endfor %}
+    </div>
+    <button type="button" class="slide-prev" aria-label="Previous slide" hidden>{{ arrow(left=True) }}</button>
+    <button type="button" class="slide-next" aria-label="Next slide">{{ arrow() }}</button>
+    <div class="slide-meta">
+      <span class="slide-dots" aria-hidden="true">{% for m in c.stack %}<span{% if loop.first %} class="on"{% endif %}></span>{% endfor %}</span>
+      <span class="slide-count" aria-live="polite">1 / {{ c.stack | length }}</span>
+    </div>
+  </div>
+</div>
+{%- endmacro -%}
+
+{%- macro post(c) -%}
+<article class="post" id="card-{{ c.id }}" data-card-id="{{ c.id }}" data-world="{{ c.world.name }}" data-rank="{{ c.rank }}"{% if c.urgent %} data-breaking="true"{% endif %} style="{{ c.style }}">
+  <div class="post-head">
+    <span class="dot" aria-hidden="true"></span>
+    <span class="topic">{{ c.topic_name }}</span>
+    {%- if c.unverified %}<span class="unverified">unverified</span>{% endif %}
+    <span class="sub">· {{ c.n_sources }} source{{ '' if c.n_sources == 1 else 's' }}</span>
+    {% if c.urgent -%}
+    <span class="meta marker"><span class="marker-dot" aria-hidden="true"></span>Breaking</span>
+    {%- elif c.breaking or (c.chapter and c.chapter >= 2) -%}
+    <span class="meta marker"><span class="marker-dot" aria-hidden="true"></span>Update</span>
+    {%- elif c.lead -%}
+    <span class="meta">Lead · {{ c.read_time }}</span>
+    {%- else -%}
+    <span class="meta">{{ c.read_time }}</span>
+    {%- endif %}
+    <button type="button" class="head-collapse" aria-label="Collapse" aria-controls="more-{{ c.id }}" hidden>{{ chevron(up=True) }}</button>
+  </div>
+  {% if c.deck %}{{ deck(c) }}{% elif not c.headline_first %}{{ visual(c.vis) }}{% endif %}
+  <h2 class="headline">{{ c.headline }}</h2>
+  {% if c.headline_first %}{{ visual(c.vis) }}{% endif %}
+  {% if c.deck or not (c.vis.kind == 'cover' and c.vis.payload.line == c.line) %}<p class="gist">{{ c.line }}</p>{% endif %}
+  {% if c.stack %}<button type="button" class="stack-chip" aria-controls="more-{{ c.id }}">+{{ c.stack | length }} more on this story</button>{% endif %}
+  {% if c.why %}<div class="why"><span class="why-label">Why it matters to you</span><p>{{ c.why }}</p></div>{% endif %}
+  <div class="more" id="more-{{ c.id }}" hidden>
+    {% if c.vis.kind == 'chart' %}<div class="structured">{{ chart_body(c.vis.payload) }}</div>
+    {% elif c.vis.kind == 'table' %}<div class="structured">{{ table_body(c.vis.payload) }}</div>{% endif %}
+    {% if c.brief_paras %}
+    <div class="brief">
+      <span class="section-label">The brief</span>
+      {% for para in c.brief_paras %}
+      {% if loop.first %}<p><span class="dropcap">{{ para[0] }}</span>{{ para[1:] }}</p>{% else %}<p>{{ para }}</p>{% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if c.stack %}{{ stack(c) }}{% endif %}
+    {% if c.sources %}
+    <div class="sources-block">
+      <span class="section-label">Sources · {{ c.n_sources }}</span>
+      <ol class="sources">
+        {% for s in c.sources %}
+        <li>{% if s.url %}<a href="{{ s.url }}" rel="noopener" target="_blank">{% else %}<span class="src">{% endif %}<span class="outlet">{{ s.outlet }}{% if s.paywall %} <span class="hint">· paywalled</span>{% endif %}{% if s.gnews %} <span class="hint">· via Google News</span>{% endif %}</span><span class="title">{{ s.title }}</span>{% if s.url %}</a>{% else %}</span>{% endif %}</li>
+        {% endfor %}
+      </ol>
+    </div>
+    {% endif %}
+    <div class="react-block">
+      <span class="section-label">Was this worth your time?</span>
+      <div class="react">
+        <button type="button" data-action="worth">Worth it</button>
+        <button type="button" data-action="skip">Skip</button>
+        <button type="button" data-action="later">Later</button>
+      </div>
+    </div>
+    <button type="button" class="collapse" aria-controls="more-{{ c.id }}">Collapse {{ chevron(up=True) }}</button>
+  </div>
+  <div class="post-foot">
+    <button type="button" class="expand" aria-expanded="false" aria-controls="more-{{ c.id }}">Expand {{ chevron() }}</button>
+  </div>
+</article>
+{%- endmacro -%}
+
+<main class="edition">
+<header class="masthead">
+  <div class="masthead-row">
+    <span class="wordmark">News House<span class="stop">.</span></span>
+    <span class="masthead-right"><span class="date">{{ short_date }}</span><a class="archive" href="index.html">Archive</a><button type="button" class="theme-toggle" role="switch" aria-checked="false" aria-label="Dark theme"><span class="theme-track"><span class="theme-knob"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="currentColor"/></svg></span></span></button></span>
+  </div>
+</header>
+
+{% if v.live.aqi or v.live.match or v.live.market %}
+<section class="live" aria-label="Live">
+  {% if v.live.aqi %}
+  <div class="live-tile" data-tile="aqi"{% if v.live_src.aqi %} data-src="{{ v.live_src.aqi }}"{% endif %}>
+    <span class="live-label">Gurgaon air now</span>
+    <span class="live-big aqi-n">{{ v.live.aqi.aqi }}</span>
+    <span class="live-band" data-dot="{{ v.live.aqi.dot }}"><span class="live-dot" aria-hidden="true"></span><span class="aqi-band">{{ v.live.aqi.band }}</span></span>
+    <span class="live-note">24-h avg · model estimate</span>
+  </div>
+  {% endif %}
+  {% if v.live.match %}
+  <div class="live-tile" data-tile="match"{% if v.live_src.match %} data-src="{{ v.live_src.match }}" data-team-id="{{ v.live_src.team_id }}" data-short="{{ v.live_src.short }}"{% endif %}>
+    <span class="live-label">Next match</span>
+    <span class="live-match">{{ v.live.match.text }}</span>
+    <span class="live-when" data-iso="{{ v.live.match.iso }}">{{ v.live.match.when }}</span>
+    {% if v.live.match.competition %}<span class="live-note live-comp">{{ v.live.match.competition }}</span>{% endif %}
+  </div>
+  {% endif %}
+  {% if v.live.market %}
+  <div class="live-tile live-market" data-tile="market" data-as-of="{{ v.live.market.as_of }}">
+    <span class="live-label">Markets</span>
+    {% for ix in v.live.market.indices %}
+    <div class="mk-row" data-symbol="{{ ix.symbol }}">
+      <span class="mk-name">{{ ix.name }}</span>
+      <span class="mk-level">{{ '{:,.2f}'.format(ix.level) }}</span>
+      <span class="mk-chg" data-dir="{{ 'down' if ix.change_pct < 0 else 'up' }}"><span aria-hidden="true">{{ '▼' if ix.change_pct < 0 else '▲' }}</span> {{ '{:.2f}'.format(ix.change_pct | abs) }}%</span>
+    </div>
+    {% endfor %}
+    <span class="live-note mk-asof" hidden></span>
+    {% set trend = v.live.market.indices | map(attribute='trend') | select | list %}
+    {% if trend %}
+    <button type="button" class="mk-toggle" aria-expanded="false" aria-controls="mk-trend">Trend</button>
+    <div class="mk-trend" id="mk-trend" hidden>
+      {% for t in trend[0] %}<span class="mk-tr"><span class="mk-tr-label">{{ t.label }}</span><span class="mk-chg" data-dir="{{ 'down' if t.pct < 0 else 'up' }}"><span aria-hidden="true">{{ '▼' if t.pct < 0 else '▲' }}</span> {{ '{:.2f}'.format(t.pct | abs) }}%</span></span>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="progress">
+  <div class="progress-text"><span>{{ v.counts.cards }} post{{ '' if v.counts.cards == 1 else 's' }} · {{ v.counts.est_minutes }} min</span><span class="progress-state">Nothing read yet</span></div>
+  <div class="progress-bar"><div class="fill"></div></div>
+</div>
+
+{% for c in v.cards %}{{ post(c) }}
+{% endfor %}
+
+{% if v.also %}
+<section class="also">
+  <div class="post-head">
+    <span class="dot" aria-hidden="true"></span>
+    <span class="topic">Also today</span><span class="sub">· no click needed</span>
+  </div>
+  {% if v.also_lines %}
+  <ol class="also-list">
+    {% for a in v.also_lines %}
+    <li style="{{ a.style }}"{% if loop.index > 4 %} hidden{% endif %}>
+      <span class="also-n">{{ loop.index }}</span>
+      <div class="also-body">
+        <p>{{ a.line }}</p>
+        <div class="also-meta">{% if a.cut_reason %}<span class="cut">cut: {{ a.cut_reason }}</span>{% endif %}<button type="button" class="should-have" data-cluster-id="{{ a.cluster_id }}">Should have been in</button></div>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+  {% if v.also_lines | length > 4 %}<button type="button" class="also-more" aria-expanded="false">Show {{ v.also_lines | length - 4 }} more {{ chevron() }}</button>{% endif %}
+  {% for f in v.also_folds %}
+  <div class="also-fold">
+    <button type="button" class="also-fold-toggle" aria-expanded="false">{{ f.label }} {{ chevron() }}</button>
+    <ol class="also-folded-list" hidden>
+      {% for a in f.rows %}
+      <li>
+        <div class="also-body">
+          <p>{{ a.line }}</p>
+          <div class="also-meta">{% if a.cut_reason %}<span class="cut">cut: {{ a.cut_reason }}</span>{% endif %}<button type="button" class="should-have" data-cluster-id="{{ a.cluster_id }}">Should have been in</button></div>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="end">
+  <div class="end-card">
+    <h2 class="end-title">That's today<span class="stop">.</span></h2>
+    <p class="end-line">{{ v.counts.cards }} post{{ '' if v.counts.cards == 1 else 's' }} in {{ v.counts.est_minutes }} minute{{ '' if v.counts.est_minutes == 1 else 's' }}. The edition ends here.</p>
+    <div class="stats">
+      <div class="stat"><span class="stat-n">{{ v.counts.cards }}</span><span class="stat-label">posts</span></div>
+      <div class="stat"><span class="stat-n">{{ v.counts.est_minutes }}</span><span class="stat-label">minutes</span></div>
+      <div class="stat"><span class="stat-n">{{ v.also_lines | length }}</span><span class="stat-label">below the cut</span></div>
+    </div>
+  </div>
+  {% if v.tune %}
+  <div class="tune">
+    <h2 class="tune-title">Tune tomorrow</h2>
+    <div class="tune-chips">
+      {% for chip in v.tune %}<button class="tune-chip" type="button" aria-pressed="false" data-payload='{{ chip.payload | tojson }}'>{{ chip.label }}</button>
+      {% endfor %}
+    </div>
+    <p class="tune-line">A tap nudges tomorrow's edition only.</p>
+  </div>
+  {% endif %}
+  <div class="next">
+    <span class="next-label">Next edition</span>
+    <span class="next-date">{{ next_edition }}</span>
+  </div>
+  {% if v.warnings %}
+  <ul class="warnings">
+    {% for w in v.warnings %}<li><span class="warn-rule">{{ w.rule }}</span> {{ w.text }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+</section>
+</main>
+<script>
+{{ js | safe }}
+</script>
+</body>
+</html>

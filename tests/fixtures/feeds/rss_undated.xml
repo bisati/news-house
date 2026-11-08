@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Undated</title><link>https://undated.example</link><description>d</description>
+<item><title>No date one</title><link>https://undated.example/1</link><description>One</description></item>
+<item><title>No date two</title><link>https://undated.example/2</link><description>Two</description></item>
+</channel></rss>

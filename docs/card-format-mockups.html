@@ -1,0 +1,177 @@
+<style>
+  .gallery{display:flex;gap:1.25rem;overflow-x:auto;padding:.5rem .25rem 1.25rem;scroll-snap-type:x proximity}
+  .gallery::-webkit-scrollbar{height:8px}.gallery::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .phone{flex:0 0 300px;scroll-snap-align:start;background:var(--bg-secondary);border:1px solid var(--border);border-radius:22px;padding:14px 13px 12px;cursor:pointer;display:flex;flex-direction:column;gap:9px;min-height:540px;position:relative;font-size:13px;line-height:1.35}
+  .phone.selected{border:2px solid var(--selected-border);background:var(--selected-bg)}
+  .fmt{position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:999px}
+  .meta{display:flex;gap:6px;align-items:center;color:var(--text-secondary);font-size:11px;margin-top:4px}
+  .chip{background:var(--bg-tertiary);color:var(--text-primary);padding:1px 7px;border-radius:999px;font-weight:600;font-size:10.5px}
+  .hl{font-size:15.5px;font-weight:700;line-height:1.25;margin:2px 0}
+  .sum{color:var(--text-primary);opacity:.85}
+  .why{background:linear-gradient(90deg,rgba(255,159,10,.18),rgba(255,159,10,.06));border-left:3px solid var(--warning);padding:7px 9px;border-radius:0 8px 8px 0;font-size:12.5px}
+  .why b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--warning);margin-bottom:2px}
+  .dial{display:flex;gap:4px;margin-top:auto}
+  .dial span{flex:1;text-align:center;font-size:10.5px;padding:4px 0;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary)}
+  .dial span.on{background:var(--text-primary);color:var(--bg-secondary);border-color:var(--text-primary);font-weight:600}
+  .foot{display:flex;gap:6px;border-top:1px solid var(--border);padding-top:8px}
+  .foot span{flex:1;text-align:center;font-size:11.5px;padding:6px 0;border-radius:8px;background:var(--bg-tertiary)}
+  table.spec{width:100%;border-collapse:collapse;font-size:11.5px;margin:4px 0}
+  table.spec th,table.spec td{padding:5px 4px;text-align:left;border-bottom:1px solid var(--border)}
+  table.spec th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary)}
+  table.spec tr.you td{background:rgba(52,199,89,.12)}
+  table.spec tr.new td{font-weight:700}
+  .tag{font-size:9.5px;padding:0 5px;border-radius:4px;background:var(--success);color:#fff;margin-left:4px;vertical-align:middle}
+  .tagn{background:var(--accent)}
+  .tl{list-style:none;margin:4px 0;padding:0 0 0 14px;border-left:2px solid var(--border)}
+  .tl li{position:relative;padding:0 0 10px 10px;color:var(--text-secondary);font-size:12px}
+  .tl li::before{content:'';position:absolute;left:-19px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--border)}
+  .tl li.now{color:var(--text-primary);font-weight:600}
+  .tl li.now::before{background:var(--accent);box-shadow:0 0 0 3px rgba(10,132,255,.25)}
+  .tl small{display:block;font-weight:400;color:var(--text-secondary);font-size:10.5px}
+  .newtag{display:inline-block;background:var(--accent);color:#fff;font-size:9.5px;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle;font-weight:700}
+  .sides{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .side{padding:8px;border-radius:8px;font-size:11.5px}
+  .side h5{margin:0 0 4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+  .side ul{margin:0;padding-left:14px}.side li{margin-bottom:3px}
+  .for{background:rgba(52,199,89,.12)}.for h5{color:var(--success)}
+  .against{background:rgba(255,59,48,.10)}.against h5{color:var(--error)}
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .ba div{padding:8px;border-radius:8px;background:var(--bg-tertiary);font-size:11.5px}
+  .ba h5{margin:0 0 4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary)}
+  .ba .after{background:rgba(10,132,255,.12)}.ba .after h5{color:var(--accent)}
+  .ba s{color:var(--text-tertiary)}
+  .done{text-align:center;display:flex;flex-direction:column;justify-content:center;flex:1;gap:10px}
+  .done .big{font-size:44px}
+  .done h4{font-size:20px;margin:0}
+  .stats{display:flex;justify-content:center;gap:14px;color:var(--text-secondary);font-size:12px}
+  .stats b{display:block;font-size:18px;color:var(--text-primary)}
+  .btn{display:block;background:var(--text-primary);color:var(--bg-secondary);padding:9px;border-radius:10px;font-weight:600;font-size:12.5px}
+  .btn.ghost{background:transparent;color:var(--text-primary);border:1px solid var(--border)}
+  .note{font-size:12px;color:var(--text-secondary);margin-top:.5rem}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:12.5px;color:var(--text-secondary);margin:.25rem 0 1rem}
+  .legend b{color:var(--text-primary)}
+</style>
+
+<h2>The feed: one card type per kind of story</h2>
+<p class="subtitle">Each phone is one card as it would appear in the scroll. Every card carries the same spine: topic chip, headline, a "why this matters to you" line, a depth dial, and a worth-it / skip footer. The body changes with the story. Scroll sideways to see all seven. Content is illustrative, not real news.</p>
+
+<div class="legend">
+  <span><b>Orange strip</b> = personalised "so what"</span>
+  <span><b>Depth dial</b> = 1 line, paragraph, brief, sources</span>
+  <span><b>Footer</b> = trains the ranker</span>
+</div>
+
+<div class="cards gallery" data-multiselect>
+
+  <!-- A: the base card -->
+  <div class="card phone" data-choice="A-sowhat" onclick="toggleSelect(this)">
+    <span class="fmt">A · So-what card</span>
+    <div class="meta"><span class="chip">AI</span> 2h ago · 6 sources</div>
+    <div class="hl">Google ships Flash-Lite 3.2: same tier, half the input price</div>
+    <div class="sum">128K context, same eval scores as 3.1, input tokens cut 50%. Rolling out on the API today, no waitlist.</div>
+    <div class="why"><b>Why it matters to you</b>You run V2.1 extraction on Flash-Lite 3.1 at T=0. Same accuracy tier, roughly half the cost. Worth a re-eval on last week's dump.</div>
+    <div class="dial"><span>1 line</span><span class="on">para</span><span>brief</span><span>sources</span></div>
+    <div class="foot"><span>👍 Worth it</span><span>👎 Skip</span><span>🔖 Later</span></div>
+  </div>
+
+  <!-- B: spec comparison -->
+  <div class="card phone" data-choice="B-compare" onclick="toggleSelect(this)">
+    <span class="fmt">B · Comparison card</span>
+    <div class="meta"><span class="chip">AI</span> 2h ago · launch</div>
+    <div class="hl">New model vs what you use today</div>
+    <table class="spec">
+      <tr><th>Model</th><th>$/1M in</th><th>Ctx</th><th>Lat.</th></tr>
+      <tr class="you"><td>Flash-Lite 3.1 <span class="tag">yours</span></td><td>0.10</td><td>64K</td><td>0.9s</td></tr>
+      <tr class="new"><td>Flash-Lite 3.2 <span class="tag tagn">new</span></td><td>0.05</td><td>128K</td><td>0.8s</td></tr>
+      <tr><td>Haiku 5.5</td><td>0.25</td><td>200K</td><td>1.1s</td></tr>
+      <tr><td>GPT-5 mini</td><td>0.15</td><td>128K</td><td>1.3s</td></tr>
+    </table>
+    <div class="why"><b>Why it matters to you</b>Only the price moved. Your bottleneck is accuracy on Hindi-English transcripts, so test before switching.</div>
+    <div class="dial"><span>1 line</span><span>para</span><span class="on">brief</span><span>sources</span></div>
+    <div class="foot"><span>👍 Worth it</span><span>👎 Skip</span><span>🔖 Later</span></div>
+  </div>
+
+  <!-- C: chart -->
+  <div class="card phone" data-choice="C-chart" onclick="toggleSelect(this)">
+    <span class="fmt">C · Chart card</span>
+    <div class="meta"><span class="chip">Edtech</span> 5h ago · 3 sources</div>
+    <div class="hl">India edtech funding up for the first time in a year</div>
+    <svg viewBox="0 0 270 120" width="100%" style="margin:2px 0 0">
+      <g font-size="9" fill="var(--text-secondary)" text-anchor="middle">
+        <rect x="14" y="36" width="34" height="70" rx="3" fill="var(--text-tertiary)"/><text x="31" y="30">410</text><text x="31" y="117">Q3'25</text>
+        <rect x="66" y="52" width="34" height="54" rx="3" fill="var(--text-tertiary)"/><text x="83" y="46">320</text><text x="83" y="117">Q4'25</text>
+        <rect x="118" y="57" width="34" height="49" rx="3" fill="var(--text-tertiary)"/><text x="135" y="51">290</text><text x="135" y="117">Q1'26</text>
+        <rect x="170" y="62" width="34" height="44" rx="3" fill="var(--text-tertiary)"/><text x="187" y="56">260</text><text x="187" y="117">Q2'26</text>
+        <rect x="222" y="41" width="34" height="65" rx="3" fill="var(--accent)"/><text x="239" y="35" fill="var(--accent)" font-weight="700">380</text><text x="239" y="117">Q3'26</text>
+      </g>
+      <text x="4" y="12" font-size="8.5" fill="var(--text-secondary)">$M raised per quarter</text>
+    </svg>
+    <div class="sum">Two late-stage rounds account for 70% of it. Seed and Series A are still flat.</div>
+    <div class="why"><b>Why it matters to you</b>Your sector. The rebound is top-heavy, so this is a hiring-market signal, not a demand signal.</div>
+    <div class="dial"><span>1 line</span><span class="on">para</span><span>brief</span><span>sources</span></div>
+    <div class="foot"><span>👍 Worth it</span><span>👎 Skip</span><span>🔖 Later</span></div>
+  </div>
+
+  <!-- D: thread / saga -->
+  <div class="card phone" data-choice="D-thread" onclick="toggleSelect(this)">
+    <span class="fmt">D · Thread card</span>
+    <div class="meta"><span class="chip">AI policy</span> Chapter 4 · you've read 1 to 3</div>
+    <div class="hl">EU AI Act: first fines land</div>
+    <ul class="tl">
+      <li>Act passes<small>Mar 2024 · read</small></li>
+      <li>GPAI obligations kick in<small>Aug 2025 · read</small></li>
+      <li>Code of practice published<small>Sep 2026 · read</small></li>
+      <li class="now">Two model providers fined €12M for missing transparency filings <span class="newtag">NEW</span><small>Today · 4 sources</small></li>
+    </ul>
+    <div class="sum">Only the delta is shown. Tap any earlier chapter for a two-line recap.</div>
+    <div class="why"><b>Why it matters to you</b>Nothing for CN directly. Worth knowing because every vendor pitch next quarter will mention "AI Act compliant".</div>
+    <div class="dial"><span>1 line</span><span class="on">para</span><span>brief</span><span>sources</span></div>
+    <div class="foot"><span>👍 Worth it</span><span>👎 Skip</span><span>🔖 Later</span></div>
+  </div>
+
+  <!-- E: two sides -->
+  <div class="card phone" data-choice="E-twosides" onclick="toggleSelect(this)">
+    <span class="fmt">E · Two-sides card</span>
+    <div class="meta"><span class="chip">India tech</span> 1d ago · debate</div>
+    <div class="hl">Should India mandate watermarks on AI-generated media?</div>
+    <div class="sides">
+      <div class="side for"><h5>For</h5><ul><li>Deepfake election ads</li><li>Platforms already have C2PA</li><li>EU and China doing it</li></ul></div>
+      <div class="side against"><h5>Against</h5><ul><li>Trivial to strip</li><li>Hits Indian startups hardest</li><li>Open-weights can't comply</li></ul></div>
+    </div>
+    <div class="sum"><b>Where it stands:</b> draft rules out, comments open till 15 Nov. Big platforms backing a voluntary version.</div>
+    <div class="why"><b>Why it matters to you</b>Your AI voice calls would count as synthetic media. Disclosure line in the opening may become mandatory.</div>
+    <div class="dial"><span>1 line</span><span class="on">para</span><span>brief</span><span>sources</span></div>
+    <div class="foot"><span>👍 Worth it</span><span>👎 Skip</span><span>🔖 Later</span></div>
+  </div>
+
+  <!-- F: before / after -->
+  <div class="card phone" data-choice="F-beforeafter" onclick="toggleSelect(this)">
+    <span class="fmt">F · Before / after card</span>
+    <div class="meta"><span class="chip">Fintech</span> 3h ago · rule change</div>
+    <div class="hl">RBI raises the no-OTP limit for recurring card payments</div>
+    <div class="ba">
+      <div><h5>Before</h5><s>Auto-debits up to ₹15,000 without OTP</s><br>Above that, OTP every cycle</div>
+      <div class="after"><h5>After · from 1 Dec</h5>Up to ₹1,00,000 without OTP for education, insurance, utilities<br>OTP only on first mandate</div>
+    </div>
+    <div class="sum">Applies to cards only. UPI autopay limits are unchanged.</div>
+    <div class="why"><b>Why it matters to you</b>Education is in the list. EMI drop-offs on the second instalment are a known leak in your funnel.</div>
+    <div class="dial"><span>1 line</span><span class="on">para</span><span>brief</span><span>sources</span></div>
+    <div class="foot"><span>👍 Worth it</span><span>👎 Skip</span><span>🔖 Later</span></div>
+  </div>
+
+  <!-- G: caught up -->
+  <div class="card phone" data-choice="G-caughtup" onclick="toggleSelect(this)">
+    <span class="fmt">G · End of feed</span>
+    <div class="done">
+      <div class="big">✓</div>
+      <h4>You're caught up.</h4>
+      <div class="stats"><span><b>11</b>stories</span><span><b>14</b>minutes</span><span><b>3</b>saved</span></div>
+      <p class="sum">Nothing else moved in your world today. Next edition tomorrow, 7:30 am.</p>
+      <span class="btn">Read the 3 you saved</span>
+      <span class="btn ghost">Close</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="note"><b>Click every card you'd want in the first version.</b> Multiple selections are fine. Then tell me in the terminal what's off, what's missing, and whether the orange "why it matters to you" strip is as central as I think it is.</p>

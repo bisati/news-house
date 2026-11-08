@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- ARTIFACT-FRAGMENT-START -->
+<title>News House Flow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap">
+<style>
+/* Layout: Mihir's snake flowchart — row 1 left→right, down on the right, row 2 right→left, down on the left. */
+:root{
+  --bg:#f3f5f7;--surface:#fff;--line:#cfd6de;--fg:#17202a;--muted:#5b6774;--ink:#2a3f8f;
+  --paper:#f7f4ee;--ol:#2a2a2e;--wire:#2a2a2e;
+  --ac1:#1d7a4f;--ac2:#6b3fa0;--ac3:#0e6f7a;--ac4:#a45f00;--ac5:#2b5fb4;--ac6:#5b6774;
+  --p1:#dff0cf;--p2:#e6e1fb;--p3:#d5f1f1;--p4:#fbefc4;--p5:#dcebfb;--p6:#ecebe8;--px:#f9dde2;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1419;--surface:#18202a;--line:#2c3846;--fg:#e3e8ee;--muted:#93a0ae;--ink:#9db2ff;
+  --paper:#17191d;--ol:#b9c0c9;--wire:#9aa3ae;
+  --ac1:#5fcf98;--ac2:#c9a6f2;--ac3:#5fd3df;--ac4:#f0b25a;--ac5:#86aef5;--ac6:#93a0ae;
+  --p1:#22331b;--p2:#2b2744;--p3:#173436;--p4:#3a3218;--p5:#1c2c42;--p6:#262a30;--px:#3e2228;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1419;--surface:#18202a;--line:#2c3846;--fg:#e3e8ee;--muted:#93a0ae;--ink:#9db2ff;
+  --paper:#17191d;--ol:#b9c0c9;--wire:#9aa3ae;
+  --ac1:#5fcf98;--ac2:#c9a6f2;--ac3:#5fd3df;--ac4:#f0b25a;--ac5:#86aef5;--ac6:#93a0ae;
+  --p1:#22331b;--p2:#2b2744;--p3:#173436;--p4:#3a3218;--p5:#1c2c42;--p6:#262a30;--px:#3e2228;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2{font-family:var(--f-display);margin:0 0 6px;text-wrap:balance}
+h1{font-size:28px}h2{font-size:18px;margin-top:26px}
+.sub{color:var(--muted);margin:0 0 10px;max-width:70ch}
+.o1{--ac:var(--ac1);--pc:var(--p1)}.o2{--ac:var(--ac2);--pc:var(--p2)}.o3{--ac:var(--ac3);--pc:var(--p3)}
+.o4{--ac:var(--ac4);--pc:var(--p4)}.o5{--ac:var(--ac5);--pc:var(--p5)}.o6{--ac:var(--ac6);--pc:var(--p6)}
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin:10px 0 14px}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.key i{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--ol);background:var(--pc)}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 20px;overflow-x:auto}
+.fc{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr) 76px) minmax(150px,1fr);min-width:1060px;row-gap:14px;align-items:center}
+.nd{position:relative;z-index:1;align-self:stretch;display:flex;flex-direction:column;background:var(--pc);border:2px solid var(--ol);border-radius:13px;padding:10px 12px;font-size:12.5px;line-height:1.38}
+.nd .w{display:block;margin:-10px -12px 8px;padding:6px 12px;border-radius:11px 11px 0 0;border-bottom:2px solid var(--ol);background:color-mix(in srgb,var(--ac) 28%,var(--pc));font-family:var(--f-display);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1.3}
+.nd b.t{font-family:var(--f-display);font-size:15px;font-weight:600;margin-bottom:4px}
+.nd ul{margin:0;padding-left:15px}
+.nd code{font-family:var(--f-mono);font-size:11px}
+.fail{margin-top:auto;padding:4px 8px;border:1.5px solid var(--ol);border-radius:8px;background:var(--px);font-size:11.5px}
+.ar{position:relative;z-index:1;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.ar small{position:absolute;left:0;right:0;bottom:calc(50% + 5px);padding:0 4px;text-align:center;font-family:var(--f-mono);font-size:10px;line-height:1.2;color:var(--muted)}
+.ar i.ln{display:block;position:relative;width:100%;height:2px;background:var(--wire)}
+.ar i.ln::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left:7px solid var(--wire);border-right:0}
+.ar i.ln.l::after{right:auto;left:-1px;border-left:0;border-right:7px solid var(--wire)}
+.vr{position:relative;display:flex;align-items:center;height:30px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.vr i.vl{position:absolute;left:50%;top:-14px;bottom:-14px;width:2px;background:var(--wire)}
+.vr i.vl::after{content:"";position:absolute;bottom:-1px;left:-4px;border:5px solid transparent;border-top:7px solid var(--wire);border-bottom:0}
+.vr span{margin-left:calc(50% + 12px);white-space:nowrap}
+.vr.up i.vl::after{bottom:auto;top:-1px;border-top:0;border-bottom:7px solid var(--wire)}
+.vr.lft span{margin-left:auto;margin-right:calc(50% + 10px)}
+.sep{align-self:center;border-top:2px dashed var(--line);position:relative;height:0;margin:10px 0}
+.sep span{position:absolute;right:0;top:-10px;background:var(--paper);padding:0 0 0 10px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.grp{align-self:stretch;margin:-12px -8px;border:2px dashed var(--wire);border-radius:18px;position:relative;z-index:0}
+.grp span{position:absolute;top:-11px;left:14px;background:var(--paper);padding:0 6px;font-family:var(--f-display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.or{text-align:center;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+/* who decides what */
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}
+.who .nd{font-size:12px}
+.who .nd b.t{font-size:14px}
+details{margin-top:18px;color:var(--muted);font-size:12.5px}
+details summary{cursor:pointer;font-family:var(--f-display);font-weight:600;color:var(--fg)}
+details ul{margin:6px 0 0;padding-left:18px}
+.foot{margin-top:14px;font-size:11.5px;color:var(--muted);font-family:var(--f-mono)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <h1>News House Flow</h1>
+  <p class="sub">What runs, in what order, and who decides what. One tick every two hours while the Mac is awake; one edition a day; a breaking lane in between.</p>
+  <div class="key">
+    <span><i class="o5"></i>Mac · launchd · Vercel</span><span><i class="o2"></i>Code (deterministic)</span><span><i class="o3"></i>Haiku · judgement calls</span><span><i class="o4"></i>Opus · writer</span><span><i class="o1"></i>Mihir</span><span><i class="o6"></i>Storage</span>
+  </div>
+
+  <div class="panel"><div class="fc">
+    <!-- row 1: left → right — every tick -->
+    <div class="grp" style="grid-row:1;grid-column:1/4"><span>Your Mac · production clone on main</span></div>
+    <div class="nd o5" style="grid-row:1;grid-column:1"><span class="w">Mac · launchd</span><b class="t">Tick fires</b><ul><li>every 2 h while awake</li><li>missed one runs on wake</li></ul></div>
+    <div class="ar" style="grid-row:1;grid-column:2"><small>runs</small><i class="ln"></i></div>
+    <div class="nd o5" style="grid-row:1;grid-column:3"><span class="w">Mac · tick.sh</span><b class="t">Pull main</b><ul><li>GitHub <code>main</code> only</li><li><code>newshouse tick</code></li></ul></div>
+    <div class="ar" style="grid-row:1;grid-column:4"><small>then</small><i class="ln"></i></div>
+    <div class="nd o2" style="grid-row:1;grid-column:5"><span class="w">Code</span><b class="t">Ingest</b><ul><li>258 sources, 206 feeds live</li><li>Reddit via API</li><li>dedupe by URL · stale &gt; 72 h</li></ul></div>
+    <div class="ar" style="grid-row:1;grid-column:6"><small>new items</small><i class="ln"></i></div>
+    <div class="nd o2" style="grid-row:1;grid-column:7"><span class="w">Code</span><b class="t">Embed</b><ul><li>local model, on the Mac</li><li>English items only</li></ul></div>
+    <div class="ar" style="grid-row:1;grid-column:8"><small>vectors</small><i class="ln"></i></div>
+    <div class="nd o2" style="grid-row:1;grid-column:9"><span class="w">Code</span><b class="t">Cluster</b><ul><li>same story if cosine ≥ 0.86</li><li>cap 30 items per story</li><li>attach to existing, never merge</li></ul></div>
+    <div class="vr" style="grid-row:2;grid-column:9"><i class="vl"></i><span>borderline pairs</span></div>
+
+    <!-- row 3: right → left — judgement calls -->
+    <div class="grp" style="grid-row:3;grid-column:5/10"><span>Claude Code headless · Haiku, effort low</span></div>
+    <div class="nd o3" style="grid-row:3;grid-column:9"><span class="w">Haiku</span><b class="t">Same event?</b><ul><li>pairs between 0.72 and 0.86</li><li>only if one item is new</li><li>unsure → no</li></ul></div>
+    <div class="ar" style="grid-row:3;grid-column:8"><small>stories</small><i class="ln l"></i></div>
+    <div class="nd o3" style="grid-row:3;grid-column:7"><span class="w">Haiku</span><b class="t">Classify</b><ul><li>50 stories per call</li><li>importance 0–100 vs <code>profile.md</code></li><li>type · tone · early? · breaking?</li><li>reads last 10 lessons</li></ul></div>
+    <div class="ar" style="grid-row:3;grid-column:6"><small>scored</small><i class="ln l"></i></div>
+    <div class="nd o3" style="grid-row:3;grid-column:5"><span class="w">Haiku</span><b class="t">Thread match</b><ul><li>same saga? → chapter n</li><li>candidates cosine ≥ 0.70</li><li>new thread if saga or ≥ 85</li></ul></div>
+    <div class="ar" style="grid-row:3;grid-column:4"><small>chaptered</small><i class="ln l"></i></div>
+    <div class="nd o2" style="grid-row:3;grid-column:3"><span class="w">Code · every tick</span><b class="t">Sync (before build)</b><ul><li><code>newshouse sync-feedback</code></li><li>inbox rows → Feedback, checked</li><li>bad rows dropped · synced twice = once</li></ul><div class="fail">Neon down → skipped, build goes on</div></div>
+    <div class="ar" style="grid-row:3;grid-column:2"><small>synced</small><i class="ln l"></i></div>
+    <div class="nd o2" style="grid-row:3;grid-column:1"><span class="w">Code</span><b class="t">Decide</b><ul><li>edition built today?</li><li>local time ≥ 06:00?</li></ul><div class="fail">no → breaking lane (below)</div></div>
+    <div class="vr lft" style="grid-row:4;grid-column:1"><i class="vl"></i><span>yes → build</span></div>
+    <div class="vr up" style="grid-row:4;grid-column:3"><i class="vl"></i><span>new taps</span></div>
+    <div class="nd o6" style="grid-row:5;grid-column:3"><span class="w">Neon · storage</span><b class="t">Feedback inbox</b><ul><li>one table, <code>feedback_inbox</code></li><li>written by the Vercel function</li><li>synced rows kept 30 d</li></ul></div>
+    <div class="nd o2" style="grid-row:5;grid-column:1"><span class="w">Code · build start</span><b class="t">Lesson stubs</b><ul><li>"should have been in" taps on cut top stories</li><li>one stub per tap · idempotent</li></ul></div>
+    <div class="vr lft" style="grid-row:6;grid-column:1"><i class="vl"></i><span>then score</span></div>
+    <!-- lessons ledger feeds Classify -->
+    <div class="vr up" style="grid-row:4;grid-column:7"><i class="vl"></i><span>10 newest lessons</span></div>
+    <div class="nd o6" style="grid-row:5;grid-column:7"><span class="w">Storage</span><b class="t">Lessons ledger</b><ul><li><code>ledger/lessons.json</code></li><li>stubs land here · Mihir fills why and fix</li><li>open <code>owed</code> lessons → Validate warns</li></ul></div>
+
+    <!-- row 5: the edition config, read by Select -->
+    <div class="nd o1" style="grid-row:5;grid-column:5"><span class="w">Mihir · config</span><b class="t">Edition config</b><ul><li><code>config/edition.yaml</code></li><li>floor &amp; cap per topic</li><li>8–36 cards · top 10</li></ul></div>
+    <div class="vr" style="grid-row:6;grid-column:5"><i class="vl"></i><span>rules</span></div>
+
+    <!-- row 7: left → right — build the edition -->
+    <div class="nd o2" style="grid-row:7;grid-column:1"><span class="w">Code</span><b class="t">Score</b><ul><li>importance × freshness</li><li>+ sources, + tier</li><li>+ your feedback weights</li></ul></div>
+    <div class="ar" style="grid-row:7;grid-column:2"><small>ranked</small><i class="ln"></i></div>
+    <div class="nd o3" style="grid-row:7;grid-column:3"><span class="w">Haiku · at build</span><b class="t">Stacks</b><ul><li>top 60 stories, one call</li><li>same event or follow-up</li><li>≤ 6 per stack · counts as 1 post</li></ul><div class="fail">bad group dropped · call fails → no stacks</div></div>
+    <div class="ar" style="grid-row:7;grid-column:4"><small>leads</small><i class="ln"></i></div>
+    <div class="nd o2" style="grid-row:7;grid-column:5"><span class="w">Code</span><b class="t">Select</b><ul><li>20-min budget · up to 36 cards</li><li>topic floors &amp; caps · stack = 1 post</li><li>top 10 printed or explained</li><li>also today: ≤ 2 per topic, 1 per thread, rest folded</li></ul></div>
+    <div class="ar" style="grid-row:7;grid-column:6"><small>shortlist</small><i class="ln"></i></div>
+    <div class="nd o2" style="grid-row:7;grid-column:7"><span class="w">Code</span><b class="t">Enrich</b><ul><li>fetch article text + image</li><li>≤ 3 per story · https images</li><li>skip paywall · Google News · Reddit</li></ul></div>
+    <div class="ar" style="grid-row:7;grid-column:8"><small>bodies</small><i class="ln"></i></div>
+    <div class="nd o4" style="grid-row:7;grid-column:9"><span class="w">Opus</span><b class="t">Write card</b><ul><li>1 of 9 visuals · tone</li><li>0 or 2–4 slides</li><li>every claim cited · also list</li><li>stack lines for follow-ups</li></ul><div class="fail">bad text → plain card · bad visual → auto cover</div></div>
+    <div class="vr" style="grid-row:8;grid-column:9"><i class="vl"></i><span>cards · also</span></div>
+
+    <!-- row 8-9: live tiles, after Select -->
+    <div class="vr" style="grid-row:8;grid-column:5"><i class="vl"></i><span>after select</span></div>
+    <div class="nd o2" style="grid-row:9;grid-column:5"><span class="w">Code</span><b class="t">Live</b><ul><li>Gurgaon air: Open-Meteo, 24-h avg · model estimate</li><li>next Barça match: ESPN</li><li>Nifty 50 · Sensex: Yahoo, 1-month trend</li></ul><div class="fail">any failure → no tile, build goes on</div></div>
+    <div class="ar" style="grid-row:9;grid-column:6"><small>tiles</small><i class="ln"></i></div>
+    <div class="nd o6" style="grid-row:9;grid-column:7"><span class="w">Storage</span><b class="t">Edition live</b><ul><li>stored with the edition</li><li>page refetches every 30 min</li></ul></div>
+
+    <!-- row 9: the validator -->
+    <div class="nd o2" style="grid-row:9;grid-column:9"><span class="w">Code</span><b class="t">Validate</b><ul><li>headline, gist, banned words</li><li>visual · slides · counts · top 10</li><li>what's left → warnings</li></ul><div class="fail">fails → Opus rewrites once · bad visual → auto cover</div></div>
+    <div class="vr" style="grid-row:10;grid-column:9"><i class="vl"></i><span>checked</span></div>
+
+    <!-- row 11: right → left — publish, read, learn -->
+    <div class="nd o6" style="grid-row:11;grid-column:9"><span class="w">Storage</span><b class="t">Save edition</b><ul><li>kept forever</li><li>SQLite now · Postgres later</li></ul></div>
+    <div class="ar" style="grid-row:11;grid-column:8"><small>edition</small><i class="ln l"></i></div>
+    <div class="nd o2" style="grid-row:11;grid-column:7"><span class="w">Code</span><b class="t">Render</b><ul><li><code>out/latest.html</code></li><li>archive <code>index.html</code></li><li>also-happened · end card + warnings</li><li>stack strips · live tiles · tune chips · night palette</li></ul></div>
+    <div class="ar" style="grid-row:11;grid-column:6"><small>read</small><i class="ln l"></i></div>
+    <div class="nd o1" style="grid-row:11;grid-column:5"><span class="w">Mihir</span><b class="t">React</b><ul><li>worth it · skip · later</li><li>"should have been in"</li><li>seen · read, sent by the page</li><li>on the phone: Vercel page</li><li>tune chips: next edition only</li></ul></div>
+    <div class="ar" style="grid-row:11;grid-column:4"><small>taps</small><i class="ln l"></i></div>
+    <div class="nd o5" style="grid-row:11;grid-column:3"><span class="w">Mac · serve</span><b class="t">Serve</b><ul><li><code>newshouse serve</code> :8787</li><li><code>POST /feedback</code> → DB</li><li>offline taps queue</li></ul></div>
+    <div class="ar" style="grid-row:11;grid-column:2"><small>events</small><i class="ln l"></i></div>
+    <div class="nd o2" style="grid-row:11;grid-column:1"><span class="w">Code</span><b class="t">Learn</b><ul><li>weights per topic &amp; source</li><li>last 20 reactions → classify prompt</li><li>tune taps → next edition only</li></ul></div>
+    <div class="vr lft" style="grid-row:12;grid-column:1"><i class="vl"></i><span>tune</span></div>
+    <div class="vr" style="grid-row:12;grid-column:7"><i class="vl"></i><span>pages</span></div>
+    <div class="grp" style="grid-row:13;grid-column:3/6"><span>Vercel · public, no access control</span></div>
+    <div class="nd o2" style="grid-row:13;grid-column:7"><span class="w">Code · after a render</span><b class="t">Publish</b><ul><li><code>newshouse publish</code></li><li>pages + fonts + <code>site/</code> → <code>site</code> branch</li><li>unchanged → no commit</li></ul><div class="fail">push fails → logged, build goes on</div></div>
+    <div class="ar" style="grid-row:13;grid-column:6"><small>push</small><i class="ln l"></i></div>
+    <div class="nd o5" style="grid-row:13;grid-column:5"><span class="w">Vercel</span><b class="t">Site</b><ul><li>deploys the <code>site</code> branch</li><li><code>/</code> → <code>latest.html</code></li><li>phone reads here</li></ul></div>
+    <div class="ar" style="grid-row:13;grid-column:4"><small>POST /feedback</small><i class="ln l"></i></div>
+    <div class="nd o5" style="grid-row:13;grid-column:3"><span class="w">Vercel function</span><b class="t">Take the tap</b><ul><li>≤ 4 KB · known action · short ids</li><li>stores one row → Neon inbox</li></ul><div class="fail">malformed → 400 / 413</div></div>
+    <div class="nd o1" style="grid-row:13;grid-column:1"><span class="w">Mihir</span><b class="t">Steer</b><ul><li>edit <code>profile.md</code></li><li>enable / disable sources</li><li>merge to <code>main</code> = deploy</li></ul></div>
+
+    <div class="sep" style="grid-row:14;grid-column:1/-1"><span>Other ticks · between editions</span></div>
+
+    <!-- row 15: breaking lane + housekeeping -->
+    <div class="nd o2" style="grid-row:15;grid-column:1"><span class="w">Code</span><b class="t">Breaking lane</b><ul><li>eligible and importance ≥ 90</li><li>max 3 a day</li></ul></div>
+    <div class="ar" style="grid-row:15;grid-column:2"><small>story</small><i class="ln"></i></div>
+    <div class="nd o4" style="grid-row:15;grid-column:3"><span class="w">Opus</span><b class="t">Breaking card</b><ul><li>pinned on top as "new"</li><li>same checks as a card</li></ul></div>
+    <div class="or" style="grid-row:15;grid-column:4">and</div>
+    <div class="nd o2" style="grid-row:15;grid-column:5"><span class="w">Code</span><b class="t">Housekeeping</b><ul><li>close threads quiet 30 d</li><li>drop article text after 90 d</li></ul></div>
+    <div class="or" style="grid-row:15;grid-column:6">and</div>
+    <div class="nd o2" style="grid-row:15;grid-column:7"><span class="w">Code</span><b class="t">Health · Sundays</b><ul><li>re-fetch every feed</li><li>report dead sources</li><li>never disables them</li></ul></div>
+  </div></div>
+
+  <h2>Who decides what</h2>
+  <div class="who">
+    <div class="nd o5"><span class="w">Mac · launchd</span><b class="t">When</b><ul><li>every 2 h, only while awake</li><li>runs whatever is on <code>main</code></li></ul></div>
+    <div class="nd o2"><span class="w">Code</span><b class="t">The rules</b><ul><li>dedupe, thresholds, caps, budget</li><li>validation: citations, 90-char headline</li><li>what counts as breaking</li></ul></div>
+    <div class="nd o3"><span class="w">Haiku</span><b class="t">The judgement</b><ul><li>same event or not</li><li>how much you'd regret missing it</li><li>which saga it belongs to</li></ul></div>
+    <div class="nd o4"><span class="w">Opus</span><b class="t">The words</b><ul><li>visual, slides, tone from the evidence</li><li>headline, four depths, why</li><li>never a fact without a source</li></ul></div>
+    <div class="nd o1"><span class="w">Mihir</span><b class="t">The taste</b><ul><li><code>profile.md</code> is the brief</li><li>reactions retrain the ranker</li><li>sources, merges, Reddit, Neon</li></ul></div>
+  </div>
+
+  <details><summary>Change log</summary>
+    <ul>
+      <li>2026-11-04 · v2 phase 4 (branch <code>v2/content</code>): a Stacks stage at build, after Score and before Select, makes one Haiku call that groups same-story clusters into one post (lead plus follow-ups to swipe, counted as one post, lead + 10 s per member), and Write adds a short line for each follow-up; new topics startups and ai-tools, product widened, Gurgaon capped at 2; up to 36 cards in a 20-minute budget; table values over 28 characters rejected; the Live stage adds a Nifty 50 / Sensex tile (Yahoo, refreshed every 30 min through <code>/api/market</code>, 1-month sparkline on tap); "should have been in" shows "Noted ✓".</li>
+      <li>2026-11-03 · hosting (branch <code>v2/hosting</code>): after a render <code>newshouse publish</code> pushes the pages and the <code>site/</code> bundle to the <code>site</code> branch, which Vercel deploys; taps from the hosted page go to <code>/feedback</code>, a Vercel function that stores them in a Neon inbox; every tick runs <code>sync-feedback</code> before the build decision, recording valid rows and dropping the rest. Neon and GitHub failures never stop a build. The endpoint is public by Mihir's choice.</li>
+      <li>2026-11-03 · v2 phase 3 (branch <code>v2/phase-3</code>): Also today shows at most 2 lines per topic and one per thread, with over-cap top stories folded; a Live stage after Select fetches Gurgaon air (24-h average, model estimate) and the next Barça match, and failures just drop the tile; Tune tomorrow chips steer the next edition only; the lessons ledger (<code>ledger/lessons.json</code>) gets stubs at build start, feeds Classify and drives the owed check in Validate; night palette; carousel chevrons and dots under the slides; <code>render</code> refreshes <code>latest.html</code>.</li>
+      <li>2026-11-03 · v2 phase 2 (branch <code>v2/phase-2</code>): Enrich keeps each item's https image (never from Google News); Classify adds a tone (good, bad, mixed, neutral); Write picks one of 9 visuals (cover, chart, table, timeline, versus, before-after, pitch, photo, quote) and may add a 2–4 slide deck; a visual that still fails after the retry gets an automatic cover and keeps its text; <code>scripts/sample_edition.py</code> shows every kind.</li>
+      <li>2026-11-03 · v2 phase 1 (branch <code>v2/phase-1</code>): edition config feeds Select (topic floors and caps, top 10); Validate after Write and the also list (one rewrite, plain-card fallback, warnings on the end card); Render adds the archive <code>index.html</code>; <code>newshouse serve</code> takes the page's reactions (worth, skip, later, should have, seen, read).</li>
+      <li>2026-10-30 · v1, matches branch <code>build/plan-a</code> at <code>4f509f7</code> (Plan A complete, first edition built).</li>
+    </ul>
+  </details>
+  <p class="foot">Source: news-house/docs/flow.html · update this file when the pipeline changes.</p>
+</div>
+<!-- ARTIFACT-FRAGMENT-END -->
+</body>
+</html>

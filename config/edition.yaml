@@ -1,0 +1,29 @@
+budget_seconds: 1200
+cards: {floor: 8, cap: 36}
+top_n: 10
+also: {max: 25, per_topic: 2}
+topics:
+  default: {min: 0, max: 4}
+  ai-models: {min: 1, max: 4}
+  ai-built: {min: 1, max: 4}
+  india-news: {min: 1, max: 4}
+  gurgaon-local: {min: 0, max: 2}
+  product-design: {min: 2, max: 4}
+  startups: {min: 1, max: 4}
+  ai-tools: {min: 1, max: 4}
+  edtech-competitors: {min: 1, max: 3}
+  football: {min: 1, max: 4}
+  india-tech-biz: {min: 0, max: 3}
+  intl-biz-tech: {min: 0, max: 3}
+  geopolitics: {min: 0, max: 2}
+  movies: {min: 0, max: 2}
+  cricket: {min: 0, max: 2}
+  tennis-f1: {min: 0, max: 2}
+colours:
+  # topic -> colour family (newshouse/present.py FAMILIES); a topic not listed is neutral
+  topic: {india-news: world, geopolitics: world, ai-models: ai, ai-built: ai, ai-tools: ai, product-design: ai, startups: business, india-tech-biz: business, intl-biz-tech: business, edtech-competitors: business, football: sport, cricket: sport, tennis-f1: sport, gurgaon-local: city, movies: screen}
+  teams:
+    barcelona: {primary: "#A50044", secondary: "#004D98"}
+live:
+  aqi: {provider: open-meteo, lat: 28.4595, lon: 77.0266}
+  fixtures: {provider: espn, team: barcelona, team_id: 83}

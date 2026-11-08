@@ -1,0 +1,95 @@
+{
+ "team": {
+  "id": "83",
+  "displayName": "Barcelona"
+ },
+ "events": [
+  {
+   "id": "401915387",
+   "date": "2026-11-03T20:00Z",
+   "name": "Aston Villa at Barcelona",
+   "league": {
+    "name": "UEFA Champions League"
+   },
+   "competitions": [
+    {
+     "date": "2026-11-03T20:00Z",
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "id": "83",
+        "displayName": "Barcelona"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "id": "362",
+        "displayName": "Aston Villa"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "401882816",
+   "date": "2026-11-08T20:00Z",
+   "name": "Barcelona at Atlético Madrid",
+   "league": {
+    "name": "Spanish LALIGA"
+   },
+   "competitions": [
+    {
+     "date": "2026-11-08T20:00Z",
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "id": "1068",
+        "displayName": "Atlético Madrid"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "id": "83",
+        "displayName": "Barcelona"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "401882804",
+   "date": "2026-11-22T13:00Z",
+   "name": "Villarreal at Barcelona",
+   "league": {
+    "name": "Spanish LALIGA"
+   },
+   "competitions": [
+    {
+     "date": "2026-11-22T13:00Z",
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "id": "83",
+        "displayName": "Barcelona"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "id": "102",
+        "displayName": "Villarreal"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

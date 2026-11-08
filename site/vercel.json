@@ -1,0 +1,15 @@
+{
+  "ignoreCommand": "bash -c '[ \"$VERCEL_GIT_COMMIT_REF\" != \"site\" ]'",
+  "rewrites": [{ "source": "/feedback", "destination": "/api/feedback" }],
+  "redirects": [{ "source": "/", "destination": "/latest.html", "permanent": false }],
+  "headers": [
+    {
+      "source": "/(.*)\\.html",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+    }
+  ]
+}

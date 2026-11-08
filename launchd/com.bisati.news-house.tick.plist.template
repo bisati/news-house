@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.bisati.news-house.tick</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>@REPO@/scripts/tick.sh &gt;&gt; @HOME@/Library/Logs/news-house/tick.log 2&gt;&amp;1</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>7200</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>CLAUDE_CODE_RETRY_WATCHDOG</key>
+    <string>1</string>
+  </dict>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>StandardOutPath</key>
+  <string>@HOME@/Library/Logs/news-house/launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>@HOME@/Library/Logs/news-house/launchd.log</string>
+</dict>
+</plist>

@@ -1,0 +1,26 @@
+# Words and regex patterns the edition validator flags in card text.
+words:
+  - pivotal
+  - crucial
+  - landmark
+  - testament
+  - underscores
+  - highlights
+  - showcases
+  - delve
+  - landscape
+  - navigate
+  - robust
+  - seamless
+  - notably
+  - quietly
+  - amid
+  - game-changer
+  - game-changing
+  - elevate
+  - unleash
+patterns:
+  - "—"
+  - '(?i)\bexperts say\b'
+  - '(?i)\bsources say\b'
+  - '(?i)\bnot just \w+ but\b'

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>News House · archive</title>
+<style>
+{{ css | safe }}
+.archive { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.archive a {
+  display: flex; flex-direction: column; gap: 2px; padding: 16px 18px;
+  background: var(--post); border-radius: 10px; text-decoration: none;
+}
+.archive .when { font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px; line-height: 1.2; }
+.archive .counts { font-size: 13px; color: var(--page-muted); }
+.archive-empty { padding: 16px 8px; color: var(--page-muted); }
+</style>
+<script>
+(function () {  /* light by default; ?theme= or the edition page's saved switch choice */
+  var t = null;
+  try { t = new URLSearchParams(window.location.search).get("theme") || window.localStorage.getItem("nh.theme"); } catch (e) { return; }
+  if (t === "dark") document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
+</head>
+<body>
+<main class="edition">
+<header class="masthead">
+  <div class="masthead-row">
+    <span class="wordmark">News House<span class="stop">.</span></span>
+    <span class="date">Archive</span>
+  </div>
+</header>
+{% if rows %}
+<ul class="archive">
+{% for r in rows %}
+  <li><a href="{{ r.date }}.html"><span class="when">{{ r.label }}</span><span class="counts">{{ r.cards }} post{{ '' if r.cards == 1 else 's' }} · {{ r.minutes }} min</span></a></li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="archive-empty">No editions yet.</p>
+{% endif %}
+</main>
+</body>
+</html>

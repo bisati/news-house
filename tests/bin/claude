@@ -1,0 +1,10 @@
+#!/bin/sh
+cat > /dev/null
+if [ -n "$FAKE_CLAUDE_LOG" ]; then
+  printf '%s\n' "$*" >> "$FAKE_CLAUDE_LOG"
+fi
+if [ "$FAKE_CLAUDE_FAIL" = "1" ]; then
+  printf '%s' '{"is_error":true,"result":"boom","session_id":"x"}'
+else
+  cat "$FAKE_CLAUDE_REPLY"
+fi

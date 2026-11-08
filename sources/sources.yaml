@@ -1,0 +1,3774 @@
+# Topic -> sources map for the personal news product. Built 2026-10-30.
+# One list item per source. Keys:
+#   topic     slug (14 topics; see docs)            tier   primary | early-signal | mainstream
+#   kind      rss|atom|json|reddit|youtube|hn|gnews|podcast|x|api|scrape
+#   url       the feed/API URL that was verified, or the page to scrape
+#   verified  true only if checkfeed.py fetched and parsed it on 2026-10-30
+#   last7d    items the feed published in the 7 days before 2026-10-30 (null if undated)
+#   latest    newest item date seen                  paywall  headlines/teaser only when true
+#   why       what this source adds that the others do not;  note: access caveats
+# Re-verify any time with:  python3 -I checkfeed.py -f <file of urls>
+# Known: Reddit returns 429 unless requests are ~60s apart with a browser UA (or use the authenticated API).
+#        X handles are listed but not fetchable without the X API.
+#        7 sources appear under two topics on purpose (e.g. Finshots, Money Stuff); dedupe by url in the pipeline.
+
+
+# ============================================================ cluster: ai
+# Cluster: AI  (topics: ai-models, ai-built)
+# Built 2026-10-30. Every feed URL with verified: true passed scratchpad/tools/checkfeed.py on 2026-10-30;
+# last7d / latest are copied from the checker output. Checker output is in sources/work-ai/out*.jsonl.
+
+# =====================================================================
+# ai-models : new models, API features, pricing, capabilities from the labs
+# =====================================================================
+
+# ---- primary --------------------------------------------------------
+- topic: ai-models
+  name: OpenAI News
+  tier: primary
+  kind: rss
+  url: https://openai.com/news/rss.xml
+  home: https://openai.com/news/
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: false
+  why: Official OpenAI announcements (models, API features, pricing, product) the hour they go live.
+  note: Also carries non-model company posts; filter on title keywords (model, API, GPT, pricing) if too chatty.
+
+- topic: ai-models
+  name: OpenAI Developer Community - Announcements
+  tier: primary
+  kind: rss
+  url: https://community.openai.com/c/announcements/6.rss
+  home: https://community.openai.com/c/announcements/6
+  verified: true
+  last7d: 2
+  latest: 2026-10-28
+  paywall: false
+  why: API-level announcements (deprecations, rate-limit and pricing changes, new endpoints) that never make the main news page.
+  note: ""
+
+- topic: ai-models
+  name: Claude Platform release notes
+  tier: primary
+  kind: rss
+  url: https://platform.claude.com/docs/en/release-notes/feed.xml
+  home: https://platform.claude.com/docs/en/release-notes/overview
+  verified: true
+  last7d: 3
+  latest: 2026-10-29
+  paywall: false
+  why: Anthropic's only official feed; every API/model/feature change to the Claude platform, dated, zero commentary.
+  note: ""
+
+- topic: ai-models
+  name: Anthropic News
+  tier: primary
+  kind: scrape
+  url: https://www.anthropic.com/news
+  home: https://www.anthropic.com/news
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Where new Claude models and major product launches are announced; no RSS exists (rss.xml and news/rss.xml both 404).
+  note: Needs scraping of the /news index (card list with dates). X fallback is @AnthropicAI (needs X API).
+
+- topic: ai-models
+  name: Google DeepMind blog
+  tier: primary
+  kind: rss
+  url: https://deepmind.google/blog/rss.xml
+  home: https://deepmind.google/blog/
+  verified: true
+  last7d: 2
+  latest: 2026-10-28
+  paywall: false
+  why: Gemini model-family launches and research announcements straight from DeepMind.
+  note: ""
+
+- topic: ai-models
+  name: Google Keyword blog - Gemini
+  tier: primary
+  kind: rss
+  url: https://blog.google/products/gemini/rss/
+  home: https://blog.google/products/gemini/
+  verified: true
+  last7d: 9
+  latest: 2026-10-29
+  paywall: false
+  why: Highest-volume official Gemini channel; model and feature launches land here same-day.
+  note: Mixes consumer Gemini app posts with model news; rank by keywords (Gemini 3, Flash, Pro, API, pricing).
+
+- topic: ai-models
+  name: Google Developers Blog
+  tier: primary
+  kind: rss
+  url: https://developers.googleblog.com/feeds/posts/default?alt=rss
+  home: https://developers.googleblog.com/
+  verified: true
+  last7d: 0
+  latest: null
+  paywall: false
+  why: Developer-facing Gemini API posts (new model IDs, SDK features, pricing tiers) that the consumer blog skips.
+  note: Feed items carry no pubDate (lastBuildDate was 2026-10-29 at check time), so the pipeline must de-dup on GUID rather than date.
+
+- topic: ai-models
+  name: Gemini API changelog
+  tier: primary
+  kind: scrape
+  url: https://ai.google.dev/gemini-api/docs/changelog
+  home: https://ai.google.dev/gemini-api/docs/changelog
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: The canonical dated list of every Gemini API model release, deprecation and feature change; the single most relevant page for someone running Gemini in production.
+  note: No RSS; bot fetch gets a 302 to a consent/locale redirect, so scrape with a browser-like UA and follow redirects. Diff the dated headings.
+
+- topic: ai-models
+  name: Gemini Python SDK releases (googleapis/python-genai)
+  tier: primary
+  kind: atom
+  url: https://github.com/googleapis/python-genai/releases.atom
+  home: https://github.com/googleapis/python-genai/releases
+  verified: true
+  last7d: 2
+  latest: 2026-10-29
+  paywall: false
+  why: New model IDs and API features show up in SDK release notes hours before the blog posts; useful if you ship on the Python SDK.
+  note: Sibling feeds follow the same pattern if wanted (googleapis/js-genai, openai/openai-python, anthropics/anthropic-sdk-python all verified live).
+
+- topic: ai-models
+  name: Mistral AI blog
+  tier: primary
+  kind: rss
+  url: https://mistral.ai/rss.xml
+  home: https://mistral.ai/news
+  verified: true
+  last7d: 1
+  latest: 2026-10-29
+  paywall: false
+  why: Official Mistral model and API announcements.
+  note: ""
+
+- topic: ai-models
+  name: Hugging Face blog
+  tier: primary
+  kind: rss
+  url: https://huggingface.co/blog/feed.xml
+  home: https://huggingface.co/blog
+  verified: true
+  last7d: 9
+  latest: 2026-10-29
+  paywall: false
+  why: Open-weights release write-ups (Qwen, DeepSeek, Llama, Kimi, SmolLM) often co-published here on launch day, plus transformers/tooling support notes.
+  note: ""
+
+- topic: ai-models
+  name: Hugging Face trending models (API)
+  tier: primary
+  kind: api
+  url: https://huggingface.co/api/models?sort=trendingScore&direction=-1&limit=20
+  home: https://huggingface.co/models?sort=trending
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Fastest signal for open-weights drops from DeepSeek/Qwen/Moonshot/Meta; a new repo climbs trending within hours of upload, before any blog post.
+  note: Returns HTTP 200 with a bare JSON array (checker only parses objects, so unverified by the tool; confirmed live by curl on 2026-10-30, top item deepseek-ai/DeepSeek-V4.1-Flash-1017). Per-lab variant - add &author=deepseek-ai (or Qwen, moonshotai, mistralai, meta-llama, google) and sort=createdAt.
+
+# ---- early-signal ---------------------------------------------------
+- topic: ai-models
+  name: Hacker News - lab keywords (50+ points)
+  tier: early-signal
+  kind: hn
+  url: https://hnrss.org/newest?q=OpenAI+OR+Anthropic+OR+Gemini+OR+DeepSeek+OR+Qwen+OR+Mistral+OR+Llama&points=50
+  home: https://news.ycombinator.com/
+  verified: true
+  last7d: 11
+  latest: 2026-10-29
+  paywall: false
+  why: Every model/API story that the HN crowd upvotes past 50, with the discussion thread; the fastest cross-lab early signal.
+  note: hnrss OR syntax works (title shows the parsed query). hnrss timed out once during checks; retry on timeout.
+
+- topic: ai-models
+  name: r/LocalLLaMA (top, daily)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day
+  home: https://www.reddit.com/r/LocalLLaMA/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Open-weights releases, leaks, benchmarks and quantisation news surface here first; the community that catches DeepSeek/Qwen/Kimi drops within minutes.
+  note: Reddit rate-limits hard; poll at most every few minutes with a real UA and back off 60s on 429.
+
+- topic: ai-models
+  name: r/MachineLearning (top, daily)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/MachineLearning/top/.rss?t=day
+  home: https://www.reddit.com/r/MachineLearning/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Research-side discussion of new papers and models, more sceptical and technical than LocalLLaMA.
+  note: Same URL pattern as the verified r/LocalLLaMA feed, but every check on 2026-10-30 returned HTTP 429 (shared-IP rate limit during the research run, four attempts with 60-150s backoff). Re-run the checker once from a quiet IP before enabling.
+
+- topic: ai-models
+  name: Simon Willison's Weblog
+  tier: early-signal
+  kind: atom
+  url: https://simonwillison.net/atom/everything/
+  home: https://simonwillison.net/
+  verified: true
+  last7d: 14
+  latest: 2026-10-29
+  paywall: false
+  why: Same-day hands-on notes on every model and API release (pricing tables, what changed, quirks); the best single human filter on this topic.
+  note: The /atom/everything/ feed includes short link posts and quotes, which is what you want here.
+
+- topic: ai-models
+  name: Latent Space
+  tier: early-signal
+  kind: rss
+  url: https://www.latent.space/feed
+  home: https://www.latent.space/
+  verified: true
+  last7d: 11
+  latest: 2026-10-29
+  paywall: false
+  why: swyx's AI-engineer newsletter and podcast; launch-day interviews with the teams that shipped the model or feature.
+  note: ""
+
+- topic: ai-models
+  name: Interconnects (Nathan Lambert)
+  tier: early-signal
+  kind: rss
+  url: https://www.interconnects.ai/feed
+  home: https://www.interconnects.ai/
+  verified: true
+  last7d: 2
+  latest: 2026-10-28
+  paywall: false
+  why: Post-training and open-model analysis from an Ai2 researcher; the best read on why a release matters and on the Chinese open-weights labs.
+  note: Occasional subscriber-only posts; feed still carries the teaser.
+
+- topic: ai-models
+  name: Import AI (Jack Clark)
+  tier: early-signal
+  kind: rss
+  url: https://importai.substack.com/feed
+  home: https://importai.substack.com/
+  verified: true
+  last7d: 1
+  latest: 2026-10-26
+  paywall: false
+  why: Weekly research digest from an Anthropic co-founder; catches papers and policy signals before they are news.
+  note: ""
+
+- topic: ai-models
+  name: AI News (smol.ai, swyx)
+  tier: early-signal
+  kind: rss
+  url: https://news.smol.ai/rss.xml
+  home: https://news.smol.ai/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Daily LLM-summarised digest of Discords, X and Reddit; the best "what did the model people argue about today" source.
+  note: rss.xml is 2.25 MB so the checker (2 MB cap) fails to parse it; a full fetch parsed 716 items but the newest was dated 2026-09-09 while the site has daily issues through 2026-10-29, so the feed looks broken/stale. Scrape the issue index at https://news.smol.ai/ instead until the feed is fixed.
+
+- topic: ai-models
+  name: Don't Worry About the Vase (Zvi)
+  tier: early-signal
+  kind: rss
+  url: https://thezvi.wordpress.com/feed/
+  home: https://thezvi.substack.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Exhaustive weekly AI roundups plus same-week deep dives on each major model release, collating reactions from across X.
+  note: WordPress mirror used because the Substack feed is over 2 MB and fails the checker. Very long posts; use as a weekly catch-up, not for alerts.
+
+- topic: ai-models
+  name: Hugging Face Daily Papers (Takara TLDR mirror)
+  tier: early-signal
+  kind: rss
+  url: https://papers.takara.ai/api/feed
+  home: https://huggingface.co/papers
+  verified: true
+  last7d: 48
+  latest: 2026-10-27
+  paywall: false
+  why: The curated arXiv channel the brief asked for; HF's human-voted daily papers with one-line TL;DRs, no raw cs.AI noise.
+  note: Third-party mirror of huggingface.co/papers. The official JSON API (https://huggingface.co/api/daily_papers) is live but returns a bare array, which the checker cannot parse.
+
+- topic: ai-models
+  name: AlphaSignal
+  tier: early-signal
+  kind: rss
+  url: https://alphasignal.ai/feed.xml
+  home: https://alphasignal.ai/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Daily ranked digest of trending papers, repos and model releases, scored by engagement; good for catching repos before they trend on GitHub.
+  note: ""
+
+- topic: ai-models
+  name: Google AI Developers Forum - Gemini API
+  tier: early-signal
+  kind: rss
+  url: https://discuss.ai.google.dev/c/gemini-api/4.rss
+  home: https://discuss.ai.google.dev/c/gemini-api/4
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Where Gemini API outages, quota changes, model-behaviour regressions and staff announcements are first reported, usually hours before a changelog entry.
+  note: Mostly user questions; weight threads with staff replies or many replies. Noisy, so rank, do not alert.
+
+- topic: ai-models
+  name: AI Explained (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCNJ1Ymd5yFuUPtn21xtRbbw
+  home: https://www.youtube.com/@aiexplained-official
+  verified: true
+  last7d: 0
+  latest: 2026-10-12
+  paywall: false
+  why: The most careful YouTube analyst of model releases (reads the system cards, runs his own benchmark); 1-3 videos a month, each one on a real release.
+  note: ""
+
+- topic: ai-models
+  name: One Useful Thing (Ethan Mollick)
+  tier: early-signal
+  kind: rss
+  url: https://www.oneusefulthing.org/feed
+  home: https://www.oneusefulthing.org/
+  verified: true
+  last7d: 0
+  latest: 2026-10-20
+  paywall: false
+  why: Early-access hands-on essays on new frontier models from someone the labs brief pre-launch; what a model changes for knowledge work.
+  note: Low cadence (2-4 posts a month).
+
+- topic: ai-models
+  name: Logan Kilpatrick (Gemini API lead)
+  tier: early-signal
+  kind: x
+  url: https://x.com/OfficialLoganK
+  home: https://x.com/OfficialLoganK
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Announces Gemini model and API changes on X before the blog post goes up; the single highest-value handle for a Gemini production user.
+  note: needs X API
+
+- topic: ai-models
+  name: Artificial Analysis
+  tier: early-signal
+  kind: x
+  url: https://x.com/ArtificialAnlys
+  home: https://artificialanalysis.ai/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Independent benchmark, speed and price-per-token comparisons posted within hours of every release; the site has no RSS.
+  note: needs X API. Site is fully JS-rendered; no feed at /rss or /feed. Pair with @lmarena_ai for leaderboard moves and codename sightings (news.lmarena.ai has no feed either).
+
+# ---- mainstream -----------------------------------------------------
+- topic: ai-models
+  name: TechCrunch AI
+  tier: mainstream
+  kind: rss
+  url: https://techcrunch.com/category/artificial-intelligence/feed/
+  home: https://techcrunch.com/category/artificial-intelligence/
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: false
+  why: Confirmation and funding/pricing context once a release is public.
+  note: ""
+
+- topic: ai-models
+  name: Ars Technica AI
+  tier: mainstream
+  kind: rss
+  url: https://arstechnica.com/ai/feed/
+  home: https://arstechnica.com/ai/
+  verified: true
+  last7d: 14
+  latest: 2026-10-29
+  paywall: false
+  why: More technical than other mainstream outlets; usually explains what a release actually does rather than the press release.
+  note: ""
+
+- topic: ai-models
+  name: Google News - Chinese labs, xAI and Meta model releases
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=DeepSeek+OR+Qwen+OR+Kimi+OR+Grok+OR+Llama+%22new+model%22+OR+%22open-source%22+OR+%22open-weight%22&hl=en-US&gl=US&ceid=US:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 18
+  latest: 2026-10-29
+  paywall: false
+  why: Catch-all for the labs that have no usable feed (DeepSeek, Qwen/Alibaba, Moonshot, xAI, Meta AI).
+  note: Google News search feeds are noisy; use for confirmation only.
+
+# =====================================================================
+# ai-built : interesting things being built with AI, before they go viral
+# =====================================================================
+
+# ---- primary --------------------------------------------------------
+- topic: ai-built
+  name: Show HN (30+ points)
+  tier: primary
+  kind: hn
+  url: https://hnrss.org/show?points=30
+  home: https://news.ycombinator.com/show
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: false
+  why: Builders demoing what they made, filtered to the ones that caught on; most Show HNs are AI tools now so no keyword filter needed.
+  note: hnrss returns 20 items max per fetch; poll hourly. A keyword variant (q=AI+OR+LLM+OR+agent, points=20) also verified if you want stricter topicality.
+
+- topic: ai-built
+  name: Launch HN
+  tier: primary
+  kind: hn
+  url: https://hnrss.org/launches
+  home: https://news.ycombinator.com/launches
+  verified: true
+  last7d: 1
+  latest: 2026-10-29
+  paywall: false
+  why: YC startups' official launches with founder Q&A; low volume, high signal.
+  note: ""
+
+- topic: ai-built
+  name: Product Hunt - Artificial Intelligence
+  tier: primary
+  kind: atom
+  url: https://www.producthunt.com/feed?category=artificial-intelligence
+  home: https://www.producthunt.com/topics/artificial-intelligence
+  verified: true
+  last7d: 33
+  latest: 2026-10-28
+  paywall: false
+  why: The day's AI product launches with vote counts; the consumer-side counterpart to Show HN.
+  note: The topic page itself returns 403 to bots; use the feed URL only.
+
+- topic: ai-built
+  name: GitHub Trending (daily, all languages)
+  tier: primary
+  kind: rss
+  url: https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml
+  home: https://github.com/trending
+  verified: true
+  last7d: 0
+  latest: null
+  paywall: false
+  why: New agent frameworks, local-model tools and AI repos the day they take off; GitHub has no official feed so this is the maintained mirror.
+  note: Items carry no dates (hence last7d 0 / latest null); de-dup on repo URL. Per-language variants exist (daily/python.xml verified).
+
+- topic: ai-built
+  name: Hugging Face trending Spaces (API)
+  tier: primary
+  kind: api
+  url: https://huggingface.co/api/spaces?sort=trendingScore&direction=-1&limit=20
+  home: https://huggingface.co/spaces
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Live demos of new models and techniques (image, video, TTS, agents) before they have a product wrapped around them.
+  note: Returns HTTP 200 with a bare JSON array (checker cannot parse it; confirmed live by curl 2026-10-30). Fields id, likes, trendingScore, createdAt.
+
+- topic: ai-built
+  name: Google Labs blog
+  tier: primary
+  kind: rss
+  url: https://blog.google/technology/google-labs/rss/
+  home: https://labs.google/
+  verified: true
+  last7d: 0
+  latest: 2026-10-06
+  paywall: false
+  why: Google's experimental AI products (NotebookLM, Flow, Stitch, Jules and the like) are announced here first; relevant to a Gemini-stack PM.
+  note: Low cadence (a few posts a month).
+
+# ---- early-signal ---------------------------------------------------
+- topic: ai-built
+  name: Ben's Bites
+  tier: early-signal
+  kind: rss
+  url: https://www.bensbites.com/feed
+  home: https://www.bensbites.com/
+  verified: true
+  last7d: 2
+  latest: 2026-10-29
+  paywall: false
+  why: "Builder-focused newsletter: new tools, what people are shipping with them, and hands-on tutorials."
+  note: ""
+
+- topic: ai-built
+  name: Every - Context Window
+  tier: early-signal
+  kind: rss
+  url: https://every.to/context-window/feed
+  home: https://every.to/context-window
+  verified: true
+  last7d: 3
+  latest: 2026-10-29
+  paywall: true
+  why: Every's AI news column; opinionated, builder-side take on what launched and why it matters.
+  note: Every has no site-wide feed (every.to/feed.xml returns HTML); per-column feeds at every.to/<column>/feed work. Some posts are subscriber-only; feed carries the teaser.
+
+- topic: ai-built
+  name: Every - Vibe Check
+  tier: early-signal
+  kind: rss
+  url: https://every.to/vibe-check/feed
+  home: https://every.to/vibe-check
+  verified: true
+  last7d: 0
+  latest: 2026-10-21
+  paywall: true
+  why: Day-one hands-on reviews of new models and tools by a team that builds with them; the "is it actually good" read.
+  note: Some posts subscriber-only.
+
+- topic: ai-built
+  name: Matt Wolfe (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UChpleBmo18P08aKCIgti38g
+  home: https://www.youtube.com/@mreflow
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: Weekly roundup plus demos of every new AI tool; the broadest "what came out this week" video source.
+  note: High volume (shorts included in the feed); keep the weekly roundup, drop shorts by duration if possible.
+
+- topic: ai-built
+  name: AI Jason (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCrXSVX9a1mj8l0CMLwKgMVw
+  home: https://www.youtube.com/@AIJasonZ
+  verified: true
+  last7d: 0
+  latest: 2026-09-23
+  paywall: false
+  why: Build-along demos of agents and LLM apps; shows the actual architecture, not just the product.
+  note: Cadence has dropped (last video 2026-09-23).
+
+- topic: ai-built
+  name: Fireship (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA
+  home: https://www.youtube.com/@Fireship
+  verified: true
+  last7d: 3
+  latest: 2026-10-28
+  paywall: false
+  why: The funny weekly dev/AI roundup the task asked for; also fast "X in 100 seconds" on new tools.
+  note: ""
+
+- topic: ai-built
+  name: Two Minute Papers (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg
+  home: https://www.youtube.com/@TwoMinutePapers
+  verified: true
+  last7d: 1
+  latest: 2026-10-28
+  paywall: false
+  why: Research demos (graphics, video, physics, robotics) that turn into products a few months later.
+  note: ""
+
+- topic: ai-built
+  name: Theo - t3.gg (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA
+  home: https://www.youtube.com/@t3dotgg
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Working developer's reaction to new AI dev tools and model releases within a day; sceptical, catches the real-world gotchas.
+  note: Opinionated and high volume; rank, do not alert.
+
+- topic: ai-built
+  name: r/AI_Agents (top, daily)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/AI_Agents/top/.rss?t=day
+  home: https://www.reddit.com/r/AI_Agents/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: "People building and selling agents: frameworks, failures, what is actually working in production."
+  note: Reddit rate-limits hard; poll at most every few minutes with a real UA and back off 60s on 429.
+
+- topic: ai-built
+  name: r/ClaudeAI (top, daily)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/ClaudeAI/top/.rss?t=day
+  home: https://www.reddit.com/r/ClaudeAI/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: The most active agentic-coding community; Claude Code workflows, MCP servers and skills show up here before blog posts.
+  note: Same URL pattern as the verified r/LocalLLaMA feed, but every check on 2026-10-30 returned HTTP 429 (shared-IP rate limit during the research run, four attempts with 60-150s backoff). Re-run the checker once from a quiet IP before enabling.
+
+- topic: ai-built
+  name: Lobsters - ai tag
+  tier: early-signal
+  kind: rss
+  url: https://lobste.rs/t/ai.rss
+  home: https://lobste.rs/t/ai
+  verified: true
+  last7d: 4
+  latest: 2026-10-29
+  paywall: false
+  why: Invite-only dev community; fewer, more technical AI posts than HN with less hype.
+  note: Low volume.
+
+- topic: ai-built
+  name: There's An AI For That
+  tier: early-signal
+  kind: scrape
+  url: https://theresanaiforthat.com/
+  home: https://theresanaiforthat.com/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Largest directory of newly listed AI tools, sorted by date; long-tail launches that never hit Product Hunt.
+  note: Site returns 403 to non-browser user agents and exposes no feed (/rss/ also 403). Would need a headless-browser scrape of the "new" listing; low priority.
+
+- topic: ai-built
+  name: AK (_akhaliq)
+  tier: early-signal
+  kind: x
+  url: https://x.com/_akhaliq
+  home: https://huggingface.co/akhaliq
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Posts every notable new paper, demo and Space within minutes of it appearing on Hugging Face; the original early-signal account for AI demos.
+  note: needs X API
+
+- topic: ai-built
+  name: Pieter Levels (levelsio)
+  tier: early-signal
+  kind: x
+  url: https://x.com/levelsio
+  home: https://x.com/levelsio
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Indie builder shipping AI products in public with revenue numbers; the reference point for what one person can build.
+  note: needs X API
+
+# ---- mainstream -----------------------------------------------------
+- topic: ai-built
+  name: TLDR AI
+  tier: mainstream
+  kind: rss
+  url: https://tldr.tech/api/rss/ai
+  home: https://tldr.tech/ai
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Daily 5-minute digest of launches and research; good for confirming what the rest of the industry saw.
+  note: ""
+
+- topic: ai-built
+  name: The Rundown AI
+  tier: mainstream
+  kind: rss
+  url: https://www.therundown.ai/feed
+  home: https://www.therundown.ai/
+  verified: true
+  last7d: 9
+  latest: 2026-10-29
+  paywall: false
+  why: Largest mass-market AI newsletter; if a tool is here it has already gone viral, which makes it the "too late" baseline.
+  note: ""
+
+# ============================================================ cluster: business
+# Business cluster: india-tech-biz, intl-biz-tech, edtech-competitors
+# Verified with checkfeed.py on 2026-10-30. last7d/latest are checker values.
+
+# ============================================================
+# india-tech-biz
+# ============================================================
+- topic: india-tech-biz
+  name: RBI Press Releases
+  tier: primary
+  kind: rss
+  url: https://www.rbi.org.in/pressreleases_rss.xml
+  home: https://www.rbi.org.in/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: The regulator's own word on fintech/payments/lending rules before any outlet writes it up
+  note: ""
+
+- topic: india-tech-biz
+  name: PIB (MeitY / DPIIT / Startup India releases) via Google News
+  tier: primary
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site%3Apib.gov.in%20%28MeitY%20OR%20%22Electronics%20and%20IT%22%20OR%20DPIIT%20OR%20%22Startup%20India%22%20OR%20semiconductor%20OR%20%22Digital%20India%22%29&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://pib.gov.in/
+  verified: true
+  last7d: 24
+  latest: 2026-10-29
+  paywall: false
+  why: Government policy announcements on tech/startups at the source; PIB's own RSS is undated and Hindi-mixed so this query is the usable form
+  note: PIB native RSS (RssMain.aspx?ModId=6) has no pubDate and ignores Lang param; MeitY has no feed at all
+
+- topic: india-tech-biz
+  name: Entrackr
+  tier: early-signal
+  kind: rss
+  url: https://entrackr.com/rss
+  home: https://entrackr.com/
+  verified: true
+  last7d: 50
+  latest: 2026-10-29
+  paywall: false
+  why: Fastest on Indian startup funding rounds, FY financials (Fintrackr) and layoffs; usually a day ahead of ET/Mint
+  note: Feed is at /rss, not /feed; tag feeds exist at /rss/tags/<tag>
+
+- topic: india-tech-biz
+  name: Inc42
+  tier: early-signal
+  kind: rss
+  url: https://inc42.com/feed/
+  home: https://inc42.com/
+  verified: true
+  last7d: 24
+  latest: 2026-10-29
+  paywall: false
+  why: Startup ecosystem beat plus data-backed sector reports; best coverage of edtech/fintech regulation fights
+  note: Inc42 Plus long reads are paywalled but headlines appear in feed
+
+- topic: india-tech-biz
+  name: The Ken
+  tier: early-signal
+  kind: rss
+  url: https://the-ken.com/feed/
+  home: https://the-ken.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: true
+  why: One deep investigative story a day on Indian tech/business; the circle where insiders argue
+  note: Feed carries headline + teaser only
+
+- topic: india-tech-biz
+  name: The Morning Context
+  tier: early-signal
+  kind: scrape
+  url: https://themorningcontext.com/
+  home: https://themorningcontext.com/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: true
+  why: Peer of The Ken with stronger edtech and internet-company reporting (Pradip K. Saha's edtech beat)
+  note: No RSS/Atom anywhere (/feed, /rss 404, no link rel=alternate); would need scraping the homepage story list
+
+- topic: india-tech-biz
+  name: MediaNama
+  tier: early-signal
+  kind: rss
+  url: https://www.medianama.com/feed/
+  home: https://www.medianama.com/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: Tech policy and regulation (MeitY, TRAI, DPDP, platform rules) covered before mainstream notices
+  note: ""
+
+- topic: india-tech-biz
+  name: The Arc
+  tier: early-signal
+  kind: rss
+  url: https://www.thearcweb.com/rss/
+  home: https://www.thearcweb.com/
+  verified: true
+  last7d: 4
+  latest: 2026-10-30
+  paywall: true
+  why: Newer long-form outlet on Indian startups and new-age companies, analytical rather than wire-style
+  note: Mostly paywalled; feed gives headline + teaser
+
+- topic: india-tech-biz
+  name: Finshots
+  tier: early-signal
+  kind: rss
+  url: https://finshots.in/rss/
+  home: https://finshots.in/
+  verified: true
+  last7d: 7
+  latest: 2026-10-29
+  paywall: false
+  why: One 3-minute explainer a day on the Indian business story that matters; good importance filter
+  note: ""
+
+- topic: india-tech-biz
+  name: The Daily Brief by Zerodha
+  tier: early-signal
+  kind: rss
+  url: https://thedailybrief.zerodha.com/feed
+  home: https://thedailybrief.zerodha.com/
+  verified: true
+  last7d: 6
+  latest: 2026-10-29
+  paywall: false
+  why: Sharper than Think School; daily markets-and-business analysis with actual numbers from Zerodha's research team
+  note: Podcast version verified at https://feeds.simplecast.com/1H1JSMd0 (5 items/7d)
+
+- topic: india-tech-biz
+  name: Tigerfeathers
+  tier: early-signal
+  kind: rss
+  url: https://tigerfeathers.substack.com/feed
+  home: https://tigerfeathers.substack.com/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Best long-form on Indian fintech/UPI/ONDC/digital public infrastructure; the essays insiders forward
+  note: Feed is alive (latest post 2026-10-16 per curl, ~2 posts/month) but is 9 MB full-text so the checker's 2 MB read truncates and fails to parse; the pipeline needs a larger read limit
+
+- topic: india-tech-biz
+  name: ET Tech
+  tier: early-signal
+  kind: rss
+  url: https://economictimes.indiatimes.com/tech/rssfeeds/13357270.cms
+  home: https://economictimes.indiatimes.com/tech
+  verified: true
+  last7d: 50
+  latest: 2026-10-29
+  paywall: false
+  why: ET's dedicated tech desk breaks a lot of funding/exec-move stories first; higher volume than Entrackr
+  note: ET Prime feed (prime/rssfeeds/62525226.cms) returned 0 items; not usable
+
+- topic: india-tech-biz
+  name: WTF is with Nikhil Kamath
+  tier: early-signal
+  kind: podcast
+  url: https://feeds.hubhopper.com/664690fdea0d7a6f61a052da119934d3.rss
+  home: https://podcasts.apple.com/podcast/id1821810331
+  verified: true
+  last7d: 1
+  latest: 2026-10-24
+  paywall: false
+  why: Long-form with Indian founders/operators who say things on this show they don't say to reporters
+  note: Weekly, 2-3 hour episodes
+
+- topic: india-tech-biz
+  name: Backstage with Millionaires
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCnpekFV93kB1O0rVqEKSumg
+  home: https://www.youtube.com/@backstagewithmillionaires
+  verified: true
+  last7d: 1
+  latest: 2026-10-24
+  paywall: false
+  why: Startup-by-startup breakdowns (incl. edtech) with financials; deeper than Think School, still accessible
+  note: ""
+
+- topic: india-tech-biz
+  name: r/IndianStartups (top, daily)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/IndianStartups/top/.rss?t=day
+  home: https://www.reddit.com/r/IndianStartups/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Founder/operator chatter and rumours (layoffs, down rounds) before they're reported
+  note: Reddit returns 429 if polled more than roughly once a minute from one IP with a browser UA; space requests
+
+- topic: india-tech-biz
+  name: r/StartUpIndia (top, daily)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/StartUpIndia/top/.rss?t=day
+  home: https://www.reddit.com/r/StartUpIndia/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Larger, noisier sibling of r/IndianStartups; catches the viral threads about Indian companies
+  note: Same Reddit rate-limit caveat
+
+- topic: india-tech-biz
+  name: Economic Times top stories
+  tier: mainstream
+  kind: rss
+  url: https://economictimes.indiatimes.com/rssfeedstopstories.cms
+  home: https://economictimes.indiatimes.com/
+  verified: true
+  last7d: 45
+  latest: 2026-10-30
+  paywall: false
+  why: Confirmation tier; what the rest of India's business world is reading
+  note: ""
+
+- topic: india-tech-biz
+  name: Mint companies
+  tier: mainstream
+  kind: rss
+  url: https://www.livemint.com/rss/companies
+  home: https://www.livemint.com/companies
+  verified: true
+  last7d: 35
+  latest: 2026-10-30
+  paywall: false
+  why: Best mainstream desk for company-level reporting and earnings; Mint Premium analysis also surfaces here
+  note: Moneycontrol RSS (rss/business.xml, rss/startups.xml) returns 403 to browser UAs from this network; not listed
+
+- topic: india-tech-biz
+  name: Business Standard companies
+  tier: mainstream
+  kind: rss
+  url: https://www.business-standard.com/rss/companies-101.rss
+  home: https://www.business-standard.com/companies
+  verified: true
+  last7d: 35
+  latest: 2026-10-29
+  paywall: false
+  why: Third confirmation outlet; stronger on listed-company and regulatory filings than ET
+  note: ""
+
+# ============================================================
+# intl-biz-tech
+# ============================================================
+- topic: intl-biz-tech
+  name: Stratechery
+  tier: early-signal
+  kind: rss
+  url: https://stratechery.com/feed/
+  home: https://stratechery.com/
+  verified: true
+  last7d: 6
+  latest: 2026-10-29
+  paywall: true
+  why: The strategic frame everyone else borrows a week later; free weekly article is in the feed
+  note: Daily updates are paywalled (headline + teaser in feed); free weekly article is full text
+
+- topic: intl-biz-tech
+  name: Benedict Evans essays
+  tier: early-signal
+  kind: rss
+  url: https://www.ben-evans.com/benedictevans?format=rss
+  home: https://www.ben-evans.com/
+  verified: true
+  last7d: 0
+  latest: 2026-09-03
+  paywall: false
+  why: Slow, high-signal essays on platform shifts; the annual presentation is the industry's shared slide deck
+  note: ~1 essay/month; his weekly newsletter is email-only with no feed
+
+- topic: intl-biz-tech
+  name: Platformer
+  tier: early-signal
+  kind: rss
+  url: https://www.platformer.news/rss/
+  home: https://www.platformer.news/
+  verified: true
+  last7d: 2
+  latest: 2026-10-28
+  paywall: true
+  why: Casey Newton's sourced reporting on Meta/Google/OpenAI internal moves and platform policy
+  note: Some issues paywalled; feed carries full text of free ones
+
+- topic: intl-biz-tech
+  name: Not Boring
+  tier: early-signal
+  kind: rss
+  url: https://www.notboring.co/feed
+  home: https://www.notboring.co/
+  verified: true
+  last7d: 1
+  latest: 2026-10-23
+  paywall: false
+  why: Packy McCormick's optimistic deep-dives on companies and theses; good for 'why this matters' framing
+  note: ""
+
+- topic: intl-biz-tech
+  name: Money Stuff (Matt Levine)
+  tier: early-signal
+  kind: rss
+  url: https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss
+  home: https://www.bloomberg.com/account/newsletters/money-stuff
+  verified: true
+  last7d: 4
+  latest: 2026-10-29
+  paywall: true
+  why: The daily finance column that explains the deal/scandal of the day better than anyone
+  note: Bloomberg author RSS gives headline + summary; the email newsletter itself is free to subscribe
+
+- topic: intl-biz-tech
+  name: The Diff (Byrne Hobart)
+  tier: early-signal
+  kind: rss
+  url: https://www.thediff.co/archive?format=rss
+  home: https://www.thediff.co/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: true
+  why: Finance-meets-tech analysis with a strategy lens; the longreads links section alone is worth it
+  note: The old /feed URL is stale (last item 2022); use the archive RSS. Partly paywalled
+
+- topic: intl-biz-tech
+  name: Hacker News (best)
+  tier: early-signal
+  kind: hn
+  url: https://hnrss.org/best
+  home: https://news.ycombinator.com/best
+  verified: true
+  last7d: 30
+  latest: 2026-10-29
+  paywall: false
+  why: Where tech news is heard first; 'best' is already importance-ranked by votes
+  note: hnrss.org/frontpage?points=100 also verified (13 items/7d) as a stricter alternative
+
+- topic: intl-biz-tech
+  name: The Information
+  tier: early-signal
+  kind: atom
+  url: https://www.theinformation.com/feed
+  home: https://www.theinformation.com/
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: true
+  why: Scoops on tech company internals (revenue, org changes, deals) days before the wires
+  note: Headlines + teaser only
+
+- topic: intl-biz-tech
+  name: Semafor (all verticals)
+  tier: early-signal
+  kind: rss
+  url: https://www.semafor.com/rss.xml
+  home: https://www.semafor.com/vertical/tech
+  verified: true
+  last7d: 173
+  latest: 2026-10-29
+  paywall: false
+  why: Reed Albergotti's tech newsletter and Semafor Business scoops; no per-vertical feed exists so filter this one by category/URL path containing /article/.../tech
+  note: High volume; vertical feeds (/vertical/tech/rss etc.) all 404
+
+- topic: intl-biz-tech
+  name: Big Technology (Alex Kantrowitz)
+  tier: early-signal
+  kind: rss
+  url: https://www.bigtechnology.com/feed
+  home: https://www.bigtechnology.com/
+  verified: true
+  last7d: 3
+  latest: 2026-10-29
+  paywall: false
+  why: Reported newsletter on big-tech strategy with access to execs; podcast transcripts too
+  note: Podcast feed (feeds.megaphone.fm/LI3617121267) is alive but too large for the checker to parse
+
+- topic: intl-biz-tech
+  name: Sharp Tech with Ben Thompson
+  tier: early-signal
+  kind: podcast
+  url: https://sharptech.fm/feed/podcast
+  home: https://sharptech.fm/
+  verified: true
+  last7d: 1
+  latest: 2026-10-23
+  paywall: false
+  why: Free companion to Stratechery; Thompson talking through the week's news without the paywall
+  note: ""
+
+- topic: intl-biz-tech
+  name: Axios (all) for Pro Rata
+  tier: early-signal
+  kind: rss
+  url: https://api.axios.com/feed/
+  home: https://www.axios.com/newsletters/axios-pro-rata
+  verified: true
+  last7d: 66
+  latest: 2026-10-29
+  paywall: false
+  why: Dan Primack's deals/VC scoops; Axios has no per-newsletter feed so filter this firehose for Pro Rata / Primack items
+  note: Every Pro Rata-specific feed URL tried returned 403/404; this is the whole-site feed
+
+- topic: intl-biz-tech
+  name: Reuters technology (via Google News)
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site%3Areuters.com%20technology&hl=en-US&gl=US&ceid=US:en
+  home: https://www.reuters.com/technology/
+  verified: true
+  last7d: 98
+  latest: 2026-10-29
+  paywall: false
+  why: Wire-speed confirmation; Reuters has had no public RSS since 2020 so this is the workable proxy
+  note: reutersagency.com and arc outboundfeeds URLs all 404 now
+
+- topic: intl-biz-tech
+  name: FT Technology
+  tier: mainstream
+  kind: rss
+  url: https://www.ft.com/technology?format=rss
+  home: https://www.ft.com/technology
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: true
+  why: Headlines for the stories that only matter once they're in the FT
+  note: Headline + standfirst only
+
+- topic: intl-biz-tech
+  name: Bloomberg Technology
+  tier: mainstream
+  kind: rss
+  url: https://feeds.bloomberg.com/technology/news.rss
+  home: https://www.bloomberg.com/technology
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: true
+  why: Bloomberg's tech wire; business feed also verified at feeds.bloomberg.com/business/news.rss
+  note: Headlines only
+
+- topic: intl-biz-tech
+  name: TechCrunch
+  tier: mainstream
+  kind: rss
+  url: https://techcrunch.com/feed/
+  home: https://techcrunch.com/
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: false
+  why: Startup funding and product news at volume; also covers Indian startups (Manish Singh's beat)
+  note: ""
+
+- topic: intl-biz-tech
+  name: The Verge
+  tier: mainstream
+  kind: atom
+  url: https://www.theverge.com/rss/index.xml
+  home: https://www.theverge.com/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: Consumer tech and platform-policy confirmation; sharper on product than the wires
+  note: The Economist business RSS returns 403 to all UAs tried, so it is not listed
+
+# ============================================================
+# edtech-competitors
+# ============================================================
+- topic: edtech-competitors
+  name: Coursera Blog
+  tier: primary
+  kind: rss
+  url: https://blog.coursera.org/feed/
+  home: https://blog.coursera.org/
+  verified: true
+  last7d: 2
+  latest: 2026-10-29
+  paywall: false
+  why: Coursera's own announcements (degrees, AI products, India partnerships) at the source
+  note: upGrad, Scaler, LeetCode have no usable news feeds (marketing blogs only); Scaler blog feed exists but is SEO content
+
+- topic: edtech-competitors
+  name: PIB Education / higher-ed releases (via Google News)
+  tier: primary
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site%3Apib.gov.in%20%28UGC%20OR%20AICTE%20OR%20%22IIT%22%20OR%20%22higher%20education%22%20OR%20NEP%20OR%20skilling%29&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://pib.gov.in/
+  verified: true
+  last7d: 11
+  latest: 2026-10-29
+  paywall: false
+  why: Ministry of Education / Skill Development announcements (NEP rollout, IIT expansions, skilling schemes) at source
+  note: ""
+
+- topic: edtech-competitors
+  name: Naukri JobSpeak (official blog tag)
+  tier: primary
+  kind: rss
+  url: https://www.naukri.com/blog/tag/naukri-jobspeak/feed/
+  home: https://www.naukri.com/blog/tag/naukri-jobspeak
+  verified: true
+  last7d: 0
+  latest: 2026-10-09
+  paywall: false
+  why: The monthly white-collar hiring index (IT, freshers, AI/ML roles) straight from Info Edge, ~1st week of each month
+  note: Monthly cadence; PDF also filed at infoedge.in and NSE
+
+- topic: edtech-competitors
+  name: UGC Public Notices
+  tier: primary
+  kind: scrape
+  url: https://www.ugc.gov.in/publicnotice
+  home: https://www.ugc.gov.in/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Online-degree / ODL regulations and warnings about unrecognised programmes land here first
+  note: No RSS (rss.xml returns HTML); page is 200 and scrapeable. AICTE site resets connections entirely
+
+- topic: edtech-competitors
+  name: Inc42 Edtech
+  tier: early-signal
+  kind: rss
+  url: https://inc42.com/industry/edtech/feed/
+  home: https://inc42.com/industry/edtech/
+  verified: true
+  last7d: 6
+  latest: 2026-10-29
+  paywall: false
+  why: The most consistent edtech beat in India (PW results, upGrad-Unacademy, Byju's insolvency, Scaler financials)
+  note: Use /industry/edtech/feed/, the /tag/edtech/ feed is stale (2023)
+
+- topic: edtech-competitors
+  name: Entrackr Edtech tag
+  tier: early-signal
+  kind: rss
+  url: https://entrackr.com/rss/tags/edtech
+  home: https://entrackr.com/tag/edtech
+  verified: true
+  last7d: 0
+  latest: 2026-08-18
+  paywall: false
+  why: Entrackr's FY financials for private edtechs (Scaler, Masai, Newton, Coding Ninjas) appear under this tag
+  note: Sparse (tagging is inconsistent); the main Entrackr feed in india-tech-biz catches the rest
+
+- topic: edtech-competitors
+  name: EdTechReview
+  tier: early-signal
+  kind: rss
+  url: https://www.edtechreview.in/feed/
+  home: https://www.edtechreview.in/
+  verified: true
+  last7d: 3
+  latest: 2026-10-29
+  paywall: false
+  why: India-focused edtech trade site; partnerships, launches and policy items that mainstream skips
+  note: Some sponsored content; weight accordingly
+
+- topic: edtech-competitors
+  name: Edtech B.E.T. (Varun Dhamija)
+  tier: early-signal
+  kind: rss
+  url: https://edtechbet.substack.com/feed
+  home: https://edtechbet.substack.com/
+  verified: true
+  last7d: 0
+  latest: 2026-09-03
+  paywall: false
+  why: The only India-specific edtech analyst newsletter found that is still publishing; unit-economics takes on PW, upGrad etc.
+  note: Roughly monthly
+
+- topic: edtech-competitors
+  name: The Report by Class Central
+  tier: early-signal
+  kind: rss
+  url: https://www.classcentral.com/report/feed/
+  home: https://www.classcentral.com/report/
+  verified: true
+  last7d: 1
+  latest: 2026-10-27
+  paywall: false
+  why: Tracks Coursera/Udemy/Udacity/edX pricing, catalogue and policy changes in detail; MOOC industry's reference
+  note: ""
+
+- topic: edtech-competitors
+  name: Edtech Insiders
+  tier: early-signal
+  kind: rss
+  url: https://edtechinsiders.substack.com/feed
+  home: https://edtechinsiders.substack.com/
+  verified: true
+  last7d: 2
+  latest: 2026-10-29
+  paywall: false
+  why: Global edtech industry newsletter + podcast (Coursera, Udemy, AI-in-education funding and M&A)
+  note: US-centric; podcast feed too large for the checker
+
+- topic: edtech-competitors
+  name: r/developersIndia bootcamp mentions (search)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/developersIndia/search.rss?q=%22Coding+Ninjas%22+OR+%22Scaler%22+OR+%22Masai%22+OR+%22Newton+School%22+OR+%22upGrad%22+OR+%22Bosscoder%22+OR+%22PW+Skills%22&restrict_sr=on&sort=new
+  home: https://www.reddit.com/r/developersIndia/
+  verified: true
+  last7d: 4
+  latest: 2026-10-26
+  paywall: false
+  why: What students actually say about edtech courses (refund fights, placement claims) in real time
+  note: Reddit search RSS; respect the ~1 req/min limit
+
+- topic: edtech-competitors
+  name: r/Btechtards bootcamp mentions (search)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/Btechtards/search.rss?q=%22Coding+Ninjas%22+OR+%22Scaler%22+OR+%22Masai%22+OR+%22Newton+School%22+OR+%22upGrad%22+OR+%22Bosscoder%22+OR+%22PW+Skills%22&restrict_sr=on&sort=new
+  home: https://www.reddit.com/r/Btechtards/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: The younger (2nd/3rd year) student audience; sentiment before they buy a course
+  note: Checker got HTTP 429 on three attempts (6 s, 60 s and 120 s spacing) while sibling feeds on the same pattern verified; same URL pattern as the verified r/developersIndia search, so expected to work with slower polling or an authenticated Reddit app
+
+- topic: edtech-competitors
+  name: r/developersIndia placement / hiring chatter (search)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/developersIndia/search.rss?q=placement+OR+%22hiring+freeze%22+OR+layoffs+OR+%22fresher%22&restrict_sr=on&sort=new
+  home: https://www.reddit.com/r/developersIndia/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Ground-level job-market signal from fresh grads weeks before JobSpeak/TeamLease publish
+  note: Checker got HTTP 429 on three attempts (6 s, 60 s and 120 s spacing); same URL pattern as the verified r/developersIndia search feed, so expected to work with slower polling or an authenticated Reddit app
+
+- topic: edtech-competitors
+  name: r/developersIndia (top, daily)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/developersIndia/top/.rss?t=day
+  home: https://www.reddit.com/r/developersIndia/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: The daily top threads of India's biggest dev community; catches viral bootcamp/placement posts the searches miss
+  note: Verified only after a 65 s idle; Reddit 429s on faster polling
+
+- topic: edtech-competitors
+  name: Hacker News mentions of LeetCode
+  tier: early-signal
+  kind: hn
+  url: https://hnrss.org/newest?q=LeetCode&points=30
+  home: https://news.ycombinator.com/
+  verified: true
+  last7d: 0
+  latest: 2026-10-12
+  paywall: false
+  why: Interview-prep culture shifts (AI in interviews, LeetCode backlash) show up on HN first
+  note: Sparse; Coursera/Udemy HN queries were quieter (last hits 2026-07 and 2026-05)
+
+- topic: edtech-competitors
+  name: Google News - Scaler / upGrad / Masai / Newton / Bosscoder
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%22Scaler%20Academy%22%20OR%20%22Scaler%20School%22%20OR%20upGrad%20OR%20%22Masai%20School%22%20OR%20%22Newton%20School%22%20OR%20Bosscoder&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 4
+  latest: 2026-10-29
+  paywall: false
+  why: Direct competitor set for the upskilling/bootcamp segment
+  note: '"Scaler" alone is too generic, hence "Scaler Academy"/"Scaler School"'
+
+- topic: edtech-competitors
+  name: Google News - Physics Wallah / PW Skills / Unacademy / Byju's / Great Learning
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%22Physics%20Wallah%22%20OR%20PhysicsWallah%20OR%20%22PW%20Skills%22%20OR%20Unacademy%20OR%20%22Byju%27s%22%20OR%20%22Great%20Learning%22&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: The listed/large Indian edtechs; PW quarterly results and Byju's insolvency move the whole sector's narrative
+  note: ""
+
+- topic: edtech-competitors
+  name: Google News - Simplilearn / Coursera / Udemy / Udacity / Codecademy
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=Simplilearn%20OR%20Coursera%20OR%20Udemy%20OR%20Udacity%20OR%20Codecademy&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 27
+  latest: 2026-10-29
+  paywall: false
+  why: Global MOOC/course platforms with India exposure; earnings and AI-course launches
+  note: Higher volume; mostly earnings and partnership PR
+
+- topic: edtech-competitors
+  name: Google News - GeeksforGeeks / LeetCode / InterviewBit / Crio / AlgoUniversity / AlgoExpert
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=GeeksforGeeks%20OR%20LeetCode%20OR%20InterviewBit%20OR%20%22Crio.Do%22%20OR%20AlgoUniversity%20OR%20AlgoExpert&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 4
+  latest: 2026-10-29
+  paywall: false
+  why: The DSA / interview-prep competitor set that overlaps most with Coding Ninjas' core
+  note: ""
+
+- topic: edtech-competitors
+  name: Google News - Coding Ninjas
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%22Coding%20Ninjas%22%20OR%20%22codingninjas%22&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 0
+  latest: 2026-07-29
+  paywall: false
+  why: Everything written about his own company; sparse by nature, so kept despite the quiet feed
+  note: Latest item 2026-07-29; expected to be quiet for long stretches
+
+- topic: edtech-competitors
+  name: Google News - Naukri JobSpeak / TeamLease / hiring freeze / campus placements
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%22Naukri%20JobSpeak%22%20OR%20%22TeamLease%22%20OR%20%22hiring%20freeze%22%20OR%20%22campus%20placement%22%20OR%20%22campus%20placements%22%20OR%20%22fresher%20hiring%22&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 9
+  latest: 2026-10-28
+  paywall: false
+  why: The placement / job-market signal for engineering grads as it is reported
+  note: ""
+
+- topic: edtech-competitors
+  name: Google News - IT services hiring (TCS / Infosys / Wipro / HCLTech / Tech Mahindra)
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%28TCS%20OR%20Infosys%20OR%20Wipro%20OR%20HCLTech%20OR%20%22Tech%20Mahindra%22%29%20AND%20%28hiring%20OR%20layoffs%20OR%20freshers%20OR%20%22campus%22%29&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-27
+  paywall: false
+  why: Fresher intake at the big IT services firms is the demand side of the upskilling market
+  note: ""
+
+- topic: edtech-competitors
+  name: Google News - UGC / AICTE / NEP / IIT online degrees / NPTEL
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%22UGC%22%20regulations%20OR%20%22AICTE%22%20approval%20OR%20%22NEP%202020%22%20OR%20%22IIT%20Madras%20BS%22%20OR%20NPTEL%20OR%20%22online%20degree%22%20OR%20%22IIT%22%20%22online%20degree%22&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 2
+  latest: 2026-10-28
+  paywall: false
+  why: Higher-ed policy moves that change what a Coding Ninjas certificate competes against
+  note: A broader 'UGC OR AICTE OR NEP' query returned 80 items/7d, mostly exam/admission noise; this narrower form is the usable one
+
+# ============================================================ cluster: product
+# Cluster: Product. Topics: product-design, solutions. Built 2026-10-30.
+# All verified:true rows were run through tools/checkfeed.py; last7d/latest copied from its output.
+# Verified-but-cut sources (to stay within 15 per topic) are in work-product/extras.yaml, same format.
+
+# ---------------------------------------------------------------- product-design
+- topic: product-design
+  name: Figma release notes
+  tier: primary
+  kind: atom
+  url: https://www.figma.com/release-notes/feed/atom.xml
+  home: https://www.figma.com/release-notes/
+  verified: true
+  last7d: 3
+  latest: 2026-10-27
+  paywall: false
+  why: The design tool's own changelog; new primitives (variables, AI features, Sites) land here before anyone writes about them
+  note: ""
+
+- topic: product-design
+  name: Linear changelog
+  tier: primary
+  kind: rss
+  url: https://linear.app/rss/changelog.xml
+  home: https://linear.app/changelog
+  verified: true
+  last7d: 0
+  latest: 2026-10-22
+  paywall: false
+  why: Weekly changelog from the company PMs copy for product craft; also a masterclass in how to write release notes
+  note: ""
+
+- topic: product-design
+  name: Figma blog (Shortcut)
+  tier: primary
+  kind: atom
+  url: https://www.figma.com/blog/feed/atom.xml
+  home: https://www.figma.com/blog/
+  verified: true
+  last7d: 4
+  latest: 2026-10-29
+  paywall: false
+  why: Figma's own essays on design process, Config talks and product thinking; zero third-party commentary
+  note: ""
+
+- topic: product-design
+  name: Linear blog
+  tier: primary
+  kind: rss
+  url: https://linear.app/rss/blog.xml
+  home: https://linear.app/blog
+  verified: true
+  last7d: 0
+  latest: 2026-10-13
+  paywall: false
+  why: Rare but dense essays on opinionated product building (quality, no-PM culture, design engineering) straight from the team
+  note: linear.app/rss/now.xml serves the same feed
+
+- topic: product-design
+  name: Lenny's Newsletter
+  tier: early-signal
+  kind: rss
+  url: https://www.lennysnewsletter.com/feed
+  home: https://www.lennysnewsletter.com
+  verified: true
+  last7d: 5
+  latest: 2026-10-28
+  paywall: true
+  why: The PM community's default feed; frameworks and operator interviews surface here weeks before they get reposted on LinkedIn
+  note: Free weekly post plus paid deep-dives; feed carries full text for free posts and teaser for paid
+
+- topic: product-design
+  name: Lenny's Podcast
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UC6t1O76G0jYXOAoYCm153dA
+  home: https://www.lennysnewsletter.com/podcast
+  verified: true
+  last7d: 8
+  latest: 2026-10-28
+  paywall: false
+  why: Long-form operator interviews (Shreyas, Ravi Mehta, Julie Zhuo all appear here); the YouTube feed also surfaces clips
+  note: Audio RSS is https://api.substack.com/feed/podcast/10845.rss (live, latest ep 2026-10-25) but the 3.1MB full-shownotes feed exceeds the checker's 2MB cap, so the YouTube feed is listed as the verified URL
+
+- topic: product-design
+  name: Product Talk (Teresa Torres)
+  tier: early-signal
+  kind: rss
+  url: https://www.producttalk.org/feed/
+  home: https://www.producttalk.org
+  verified: true
+  last7d: 1
+  latest: 2026-10-27
+  paywall: false
+  why: Continuous discovery practice from the person who defined it; practical interview and opportunity-tree craft, no listicles
+  note: ""
+
+- topic: product-design
+  name: The Beautiful Mess (John Cutler)
+  tier: early-signal
+  kind: rss
+  url: https://cutlefish.substack.com/feed
+  home: https://cutlefish.substack.com
+  verified: true
+  last7d: 1
+  latest: 2026-10-25
+  paywall: false
+  why: Systems-thinking take on product orgs and how work actually flows; the most honest writing on PM dysfunction
+  note: ""
+
+- topic: product-design
+  name: Shreyas Doshi (newsletter)
+  tier: early-signal
+  kind: rss
+  url: https://shreyasdoshi.substack.com/feed
+  home: https://shreyasdoshi.substack.com
+  verified: true
+  last7d: 0
+  latest: 2026-10-01
+  paywall: false
+  why: Product sense, judgement and LNO-style frameworks from the ex-Stripe/Twitter PM; roughly monthly, every post is dense
+  note: Most of his thinking lands first on X @shreyas (needs X API); the newsletter is the slower, longer form
+
+- topic: product-design
+  name: Nielsen Norman Group
+  tier: early-signal
+  kind: rss
+  url: https://www.nngroup.com/feed/rss/
+  home: https://www.nngroup.com/articles/
+  verified: true
+  last7d: 2
+  latest: 2026-10-23
+  paywall: false
+  why: Research-backed UX guidance (heuristics, AI-UX studies); the canonical citation when arguing a design decision
+  note: ""
+
+- topic: product-design
+  name: Built for Mars UX case studies
+  tier: early-signal
+  kind: rss
+  url: https://builtformars.com/case-studies/feed.xml
+  home: https://builtformars.com/case-studies
+  verified: true
+  last7d: 0
+  latest: 2026-10-05
+  paywall: false
+  why: Screen-by-screen teardowns of real onboarding and checkout flows with psychology callouts; craft, not opinion
+  note: Roughly fortnightly cadence
+
+- topic: product-design
+  name: Sidebar (5 design links a day)
+  tier: early-signal
+  kind: rss
+  url: https://sidebar.io/feed.xml
+  home: https://sidebar.io
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: false
+  why: Hand-picked daily design links; the fastest way to catch new essays from Rauno, Emil, Dan Mall and other no-feed designers
+  note: Covers the personal sites in this list that have no RSS (rauno.me, emilkowal.ski, danmall.com, growth.design)
+
+- topic: product-design
+  name: r/ProductManagement
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/ProductManagement/top/.rss?t=day
+  home: https://www.reddit.com/r/ProductManagement/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Working-PM community pulse (tooling shifts, AI-PM debates, layoffs) before it is written up anywhere
+  note: Reddit rate-limits hard; poll at most every 10 min with a browser UA, back off 60s on 429
+
+- topic: product-design
+  name: UX Collective
+  tier: mainstream
+  kind: rss
+  url: https://uxdesign.cc/feed
+  home: https://uxdesign.cc
+  verified: true
+  last7d: 10
+  latest: 2026-10-28
+  paywall: false
+  why: Largest design publication on Medium; confirmation layer for design discourse and a steady stream of mid-career practitioner essays
+  note: High volume; rank by claps or title keywords rather than ingesting all
+
+- topic: product-design
+  name: Smashing Magazine
+  tier: mainstream
+  kind: rss
+  url: https://www.smashingmagazine.com/feed/
+  home: https://www.smashingmagazine.com
+  verified: true
+  last7d: 1
+  latest: 2026-10-23
+  paywall: false
+  why: Long-running, edited UX and front-end craft articles; the mainstream confirmation that a pattern has arrived
+  note: ""
+
+# ---- PM craft (added 2026-11-04; verified with checkfeed.py same day)
+- topic: product-design
+  name: Elena Verna
+  tier: primary
+  kind: rss
+  url: https://www.elenaverna.com/feed
+  home: https://www.elenaverna.com/
+  verified: true
+  last7d: 1
+  latest: 2026-11-03
+  paywall: false
+  why: "Growth PM craft from a practitioner."
+  note: ""
+
+- topic: product-design
+  name: Aakash Gupta, Product Growth
+  tier: primary
+  kind: rss
+  url: https://www.news.aakashg.com/feed
+  home: https://www.news.aakashg.com/
+  verified: true
+  last7d: 2
+  latest: 2026-11-03
+  paywall: true
+  why: "PM career and craft; some posts paywalled."
+  note: ""
+
+- topic: product-design
+  name: Department of Product
+  tier: mainstream
+  kind: rss
+  url: https://departmentofproduct.substack.com/feed
+  home: https://departmentofproduct.substack.com/
+  verified: true
+  last7d: 2
+  latest: 2026-11-02
+  paywall: false
+  why: "Product management essays and frameworks."
+  note: ""
+
+- topic: product-design
+  name: Andrew Chen
+  tier: primary
+  kind: rss
+  url: https://andrewchen.substack.com/feed
+  home: https://andrewchen.substack.com/
+  verified: true
+  last7d: 0
+  latest: 2026-10-27
+  paywall: false
+  why: "Network effects and growth from an a16z partner; about weekly."
+  note: ""
+
+- topic: product-design
+  name: SVPG (Marty Cagan)
+  tier: primary
+  kind: rss
+  url: https://www.svpg.com/feed/
+  home: https://www.svpg.com/
+  verified: true
+  last7d: 0
+  latest: 2026-10-21
+  paywall: false
+  why: "Product operating model thinking; low volume."
+  note: ""
+
+- topic: product-design
+  name: TLDR Product
+  tier: mainstream
+  kind: rss
+  url: https://tldr.tech/api/rss/product
+  home: https://tldr.tech/product
+  verified: true
+  last7d: 2
+  latest: 2026-11-03
+  paywall: false
+  why: "Digest of product management links."
+  note: ""
+
+# ---------------------------------------------------------------- solutions
+- topic: solutions
+  name: Product Hunt (daily)
+  tier: primary
+  kind: atom
+  url: https://www.producthunt.com/feed
+  home: https://www.producthunt.com
+  verified: true
+  last7d: 35
+  latest: 2026-10-28
+  paywall: false
+  why: Where new products are announced; feed carries votes so you can threshold to the daily top few
+  note: Category variants work the same way, e.g. ?category=developer-tools or ?category=design-tools
+
+- topic: solutions
+  name: Launch HN (YC launches on Hacker News)
+  tier: primary
+  kind: hn
+  url: https://hnrss.org/launches
+  home: https://news.ycombinator.com/launches
+  verified: true
+  last7d: 1
+  latest: 2026-10-29
+  paywall: false
+  why: Founder-written launch posts with HN comment pushback attached; the subset of YC launches worth reading
+  note: ""
+
+- topic: solutions
+  name: Y Combinator Launches
+  tier: primary
+  kind: scrape
+  url: https://www.ycombinator.com/launches
+  home: https://www.ycombinator.com/launches
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: The full stream of YC company launches (several a day), including the India-focused batch companies
+  note: No feed (tried /launches/rss, .rss, ?feed=rss, /companies/launches). Scrape the launches index; each card links to /launches/<slug>. Launch HN feed above covers the ones that reach HN
+
+- topic: solutions
+  name: NPCI press releases
+  tier: primary
+  kind: scrape
+  url: https://www.npci.org.in/npci-in-news/press-releases
+  home: https://www.npci.org.in
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Where UPI, RuPay, BHIM and cross-border rail features are actually announced
+  note: Site returns HTTP 403 to non-browser user agents; needs a headless browser. The Google News DPI query below is the machine-readable proxy
+
+- topic: solutions
+  name: Show HN
+  tier: early-signal
+  kind: hn
+  url: https://hnrss.org/show?points=50
+  home: https://news.ycombinator.com/show
+  verified: true
+  last7d: 17
+  latest: 2026-10-29
+  paywall: false
+  why: Builders demoing things that solve a real itch, filtered to 50+ points; the earliest signal on clever indie solutions
+  note: Raise the points floor to 100 if too noisy
+
+- topic: solutions
+  name: a16z
+  tier: early-signal
+  kind: rss
+  url: https://a16z.substack.com/feed
+  home: https://a16z.com
+  verified: true
+  last7d: 7
+  latest: 2026-10-29
+  paywall: false
+  why: Market maps, 'big ideas' and operator essays on what gets built next; the Substack mirror is the only working feed of a16z.com
+  note: a16z.com/feed/ is dead; https://www.a16z.news/feed serves the identical feed
+
+- topic: solutions
+  name: Not Boring (Packy McCormick)
+  tier: early-signal
+  kind: rss
+  url: https://www.notboring.co/feed
+  home: https://www.notboring.co
+  verified: true
+  last7d: 1
+  latest: 2026-10-23
+  paywall: false
+  why: Long 'why this company/idea matters' essays on hard-tech and infrastructure builders; the 'wow, someone solved that' register
+  note: May be duplicated by another cluster; fine either way
+
+- topic: solutions
+  name: Works in Progress
+  tier: early-signal
+  kind: rss
+  url: https://www.worksinprogress.news/feed
+  home: https://worksinprogress.co
+  verified: true
+  last7d: 2
+  latest: 2026-10-29
+  paywall: false
+  why: Essays on how real-world problems (housing, energy, vaccines, metascience) got solved or could be; progress-studies flavour
+  note: worksinprogress.co/feed/ is 404; the Substack newsletter feed is the live one
+
+- topic: solutions
+  name: Money Stuff (Matt Levine)
+  tier: early-signal
+  kind: rss
+  url: https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss
+  home: https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine
+  verified: true
+  last7d: 4
+  latest: 2026-10-29
+  paywall: true
+  why: Daily explanation of clever (and dumb) financial and corporate mechanisms; the best 'how does this actually work' writing anywhere
+  note: Feed carries headline plus teaser; the email edition is free to subscribe
+
+- topic: solutions
+  name: iSPIRT ProductNation
+  tier: early-signal
+  kind: rss
+  url: https://pn.ispirt.in/feed/
+  home: https://pn.ispirt.in
+  verified: true
+  last7d: 0
+  latest: 2026-10-16
+  paywall: false
+  why: The think tank behind India Stack; DPI, ONDC, Account Aggregator and Beckn thinking appears here before government or press
+  note: Low cadence (a few posts a month). India Stack's own site and ONDC's site have no feed or blog
+
+- topic: solutions
+  name: The Ken
+  tier: early-signal
+  kind: rss
+  url: https://the-ken.com/feed/
+  home: https://the-ken.com
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: true
+  why: One deeply reported Indian business story a day; the Nutgraf's 'why this worked' framing on Indian startups and DPI
+  note: Feed is headline plus teaser. The Nutgraf newsletter itself has no separate feed (subscriber-only email)
+
+- topic: solutions
+  name: r/IndianStartups
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/IndianStartups/top/.rss?t=day
+  home: https://www.reddit.com/r/IndianStartups/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Indian founders and operators talking shop; launches, ONDC/UPI integration pain and clever hacks before press coverage
+  note: Reddit rate-limits hard; poll gently with a browser UA, back off 60s on 429. Noisy; threshold on score
+
+- topic: solutions
+  name: Wendover Productions
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UC9RM-iSvTu1uPJb8X5yp3EQ
+  home: https://www.youtube.com/@Wendoverproductions
+  verified: true
+  last7d: 0
+  latest: 2026-10-21
+  paywall: false
+  why: Logistics and operations explainers (how X actually gets delivered/built); the business-thinking documentary register
+  note: Roughly fortnightly. PolyMatter (UCgNg3vwj3xt7QOrcIDaHdFg) verified but last upload 2026-07-24, so dropped as dormant
+
+- topic: solutions
+  name: Rest of World
+  tier: mainstream
+  kind: rss
+  url: https://restofworld.org/feed/
+  home: https://restofworld.org
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Reported tech stories from outside the West (India, SE Asia, Africa, LatAm); the mainstream source closest to the 'solutions' brief
+  note: Feed is live (curl shows pubDates 2026-10-29, 10-26, 10-22) but an unescaped '&' in a media URL makes strict XML parsers fail; use a lenient parser (feedparser) or regex the items. Region feed /region/south-asia/feed/ returns 403
+
+- topic: solutions
+  name: Google News - India DPI query
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=ONDC+OR+%22India+Stack%22+OR+NPCI+OR+%22digital+public+infrastructure%22&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com
+  verified: true
+  last7d: 14
+  latest: 2026-10-29
+  paywall: false
+  why: Confirmation layer for NPCI, ONDC and DPI announcements that NPCI's 403 site and ONDC's feed-less site cannot provide
+  note: A second query for Account Aggregator / DigiLocker / Bhashini / Beckn also verified (27 in last 7d); see extras.yaml
+
+# ============================================================ cluster: world
+# Cluster: World, India, local, movies  (topics: geopolitics, india-news, gurgaon-local, movies)
+# Verified with scratchpad/tools/checkfeed.py on 2026-10-30. last7d/latest copied from checker output.
+# kind: api entries cannot be parsed by the checker (non-feed JSON) -> verified: false even when curl returned data; see note.
+
+# ---------------------------------------------------------------- geopolitics
+- topic: geopolitics
+  name: War on the Rocks
+  tier: early-signal
+  kind: rss
+  url: https://warontherocks.com/feed/
+  home: https://warontherocks.com/
+  verified: true
+  last7d: 14
+  latest: 2026-10-29
+  paywall: false
+  why: Practitioner-written defence and strategy analysis; where US/Indo-Pacific security debates start before they hit op-ed pages
+  note: ""
+
+- topic: geopolitics
+  name: Foreign Affairs
+  tier: early-signal
+  kind: rss
+  url: https://www.foreignaffairs.com/rss.xml
+  home: https://www.foreignaffairs.com/
+  verified: true
+  last7d: 8
+  latest: 2026-10-29
+  paywall: true
+  why: Long-form agenda-setting essays (the pieces policymakers quote months later); feed carries headline plus teaser
+  note: paywall; RSS gives title and summary only
+
+- topic: geopolitics
+  name: Foreign Policy
+  tier: early-signal
+  kind: rss
+  url: https://foreignpolicy.com/feed/
+  home: https://foreignpolicy.com/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: true
+  why: Faster than Foreign Affairs, regular South Asia desk coverage (Michael Kugelman's South Asia Brief is here)
+  note: metered paywall; feed has full headlines and summaries
+
+- topic: geopolitics
+  name: The Diplomat
+  tier: early-signal
+  kind: rss
+  url: https://thediplomat.com/feed/
+  home: https://thediplomat.com/
+  verified: true
+  last7d: 73
+  latest: 2026-10-29
+  paywall: false
+  why: Highest-volume Asia-only outlet; India-China, India-Pakistan, Indian Ocean and Southeast Asia angles that Western outlets skip
+  note: high volume (~70/week); rank by keyword, do not read all
+
+- topic: geopolitics
+  name: The Interpreter (Lowy Institute)
+  tier: early-signal
+  kind: rss
+  url: https://www.lowyinstitute.org/the-interpreter/rss.xml
+  home: https://www.lowyinstitute.org/the-interpreter
+  verified: true
+  last7d: 17
+  latest: 2026-10-30
+  paywall: false
+  why: Indo-Pacific think-tank blog with a strong India and Quad desk; shorter and earlier than the big journals
+  note: ""
+
+- topic: geopolitics
+  name: ORF (Observer Research Foundation) via Google News
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:orfonline.org&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.orfonline.org/
+  verified: true
+  last7d: 32
+  latest: 2026-10-29
+  paywall: false
+  why: Delhi's largest foreign-policy think tank; Expert Speak and Raisina commentary from the people who brief MEA
+  note: orfonline.org has no RSS (404 on /feed, /rss); this Google News site-query is the machine-readable proxy
+
+- topic: geopolitics
+  name: Anticipating the Unintended (Pranay Kotasthane, Takshashila)
+  tier: early-signal
+  kind: rss
+  url: https://publicpolicy.substack.com/feed
+  home: https://publicpolicy.substack.com/
+  verified: true
+  last7d: 1
+  latest: 2026-10-25
+  paywall: false
+  why: Weekly India-centred public-policy and geopolitics frameworks (semiconductors, China, state capacity); the Takshashila house view
+  note: weekly cadence; takshashila.org.in itself has no feed
+
+- topic: geopolitics
+  name: Chartbook (Adam Tooze)
+  tier: early-signal
+  kind: rss
+  url: https://adamtooze.substack.com/feed
+  home: https://adamtooze.substack.com/
+  verified: true
+  last7d: 12
+  latest: 2026-10-29
+  paywall: false
+  why: "Geo-economics: energy, trade, chips and finance behind the geopolitics; charts not takes"
+  note: some posts paid; feed still lists them
+
+- topic: geopolitics
+  name: Sinocism (Bill Bishop)
+  tier: early-signal
+  kind: rss
+  url: https://sinocism.com/feed
+  home: https://sinocism.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: true
+  why: The China newsletter other China newsletters read; daily read of Chinese state media and policy signals
+  note: paywall; feed carries free preview portion
+
+- topic: geopolitics
+  name: ChinaTalk (Jordan Schneider)
+  tier: early-signal
+  kind: rss
+  url: https://www.chinatalk.media/feed
+  home: https://www.chinatalk.media/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: China tech-and-strategy (export controls, AI, chips) with interviews; most relevant China source for a tech PM
+  note: also a podcast; feed covers posts
+
+- topic: geopolitics
+  name: Tracking People's Daily (Manoj Kewalramani, Takshashila)
+  tier: early-signal
+  kind: rss
+  url: https://trackingpeoplesdaily.substack.com/feed
+  home: https://trackingpeoplesdaily.substack.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Daily Indian read of People's Daily and CCP messaging; the India-China specialist Substack that is actually active
+  note: Ananth Krishnan's India China Newsletter (indiachina.substack.com/feed) verified but dormant since 2026-09-14, not listed
+
+- topic: geopolitics
+  name: Cut the Clutter (Shekhar Gupta, ThePrint) via ThePrint podcast feed
+  tier: early-signal
+  kind: podcast
+  url: https://theprint.podbean.com/feed.xml
+  home: https://www.youtube.com/@ThePrintIndia
+  verified: true
+  last7d: 11
+  latest: 2026-10-29
+  paywall: false
+  why: Daily Indian-establishment read of the day's geopolitics; feed titles are prefixed 'CutTheClutter:' so it is filterable
+  note: feed mixes all ThePrint pods; filter title prefix 'CutTheClutter:'. Video equivalent is the ThePrint YouTube feed https://www.youtube.com/feeds/videos.xml?channel_id=UCuyRsHZILrU7ZDIAbGASHdA (verified, 15/7d, all shows)
+
+- topic: geopolitics
+  name: Reuters World via Google News
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:reuters.com+world&hl=en-US&gl=US&ceid=US:en
+  home: https://www.reuters.com/world/
+  verified: true
+  last7d: 99
+  latest: 2026-10-29
+  paywall: false
+  why: Fastest wire confirmation of anything the analysis sources discuss
+  note: Reuters has no public RSS since 2020; Google News site-query is the proxy
+
+- topic: geopolitics
+  name: Al Jazeera English
+  tier: mainstream
+  kind: rss
+  url: https://www.aljazeera.com/xml/rss/all.xml
+  home: https://www.aljazeera.com/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Non-Western framing of Middle East, Africa and South Asia stories; good counterweight to Reuters/BBC
+  note: BBC World (http://feeds.bbci.co.uk/news/world/rss.xml) also verified (28/7d) if a third is wanted
+
+- topic: geopolitics
+  name: The Hindu International
+  tier: mainstream
+  kind: rss
+  url: https://www.thehindu.com/news/international/feeder/default.rss
+  home: https://www.thehindu.com/news/international/
+  verified: true
+  last7d: 60
+  latest: 2026-10-30
+  paywall: false
+  why: Indian mainstream lens on world news; carries MEA statements and India-angle wire stories
+  note: Indian Express Explained (https://indianexpress.com/section/explained/feed/) verified 59/7d is listed under india-news; The Economist RSS is bot-blocked (403), use https://news.google.com/rss/search?q=site:economist.com+India+OR+China+OR+Asia&hl=en-US&gl=US&ceid=US:en (verified 79/7d, paywall) if wanted
+
+# ---------------------------------------------------------------- india-news
+- topic: india-news
+  name: PIB (Press Information Bureau) all releases
+  tier: primary
+  kind: rss
+  url: https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3
+  home: https://pib.gov.in/
+  verified: true
+  last7d: 0
+  latest: null
+  paywall: false
+  why: Every Government of India press release and cabinet decision, before any outlet writes it up
+  note: feed has 20 items but no pubDate (checker shows 0 dated); titles currently come out in Hindi regardless of Lang param. Dedupe by PRID in the link and fetch the English page at https://pib.gov.in/PressReleasePage.aspx?PRID=<id>
+
+- topic: india-news
+  name: RBI press releases
+  tier: primary
+  kind: rss
+  url: https://www.rbi.org.in/pressreleases_rss.xml
+  home: https://www.rbi.org.in/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: Policy decisions, bank actions and fintech rules direct from the regulator
+  note: notifications feed also works, https://www.rbi.org.in/notifications_rss.xml (6/7d)
+
+- topic: india-news
+  name: LiveLaw
+  tier: primary
+  kind: rss
+  url: https://www.livelaw.in/google_feeds.xml
+  home: https://www.livelaw.in/
+  verified: true
+  last7d: 60
+  latest: 2026-10-29
+  paywall: false
+  why: Supreme Court and High Court orders reported same day, with the order text
+  note: Bar & Bench Quintype feeds (/feed, /stories.rss) return an empty channel; use https://news.google.com/rss/search?q=%22Supreme+Court%22+India&hl=en-IN&gl=IN&ceid=IN:en (verified 93/7d) as the mainstream legal backstop
+
+- topic: india-news
+  name: Scroll.in
+  tier: early-signal
+  kind: rss
+  url: https://feeds.feedburner.com/ScrollinArticles
+  home: https://scroll.in/
+  verified: true
+  last7d: 100
+  latest: 2026-10-29
+  paywall: false
+  why: Reporting and explainers on politics, courts and institutions that mainstream TV skips; strong data pieces
+  note: feed is capped at 100 items per fetch
+
+- topic: india-news
+  name: The Wire
+  tier: early-signal
+  kind: rss
+  url: https://cms.thewire.in/feed
+  home: https://thewire.in/
+  verified: true
+  last7d: 40
+  latest: 2026-10-29
+  paywall: false
+  why: Investigations and dissenting coverage; often first on stories that become mainstream a week later
+  note: thewire.in/rss and /feed return HTML; the working feed is on the cms. subdomain
+
+- topic: india-news
+  name: The India Cable
+  tier: early-signal
+  kind: rss
+  url: https://theindiacable.substack.com/feed
+  home: https://theindiacable.substack.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-28
+  paywall: true
+  why: Daily curated digest of the day's important India stories plus op-ed links, by The Wire's founders and Sushant Singh; one read replaces ten front pages
+  note: paid for full issues; feed shows preview
+
+- topic: india-news
+  name: India Inside Out (Rohan Venkataramakrishnan)
+  tier: early-signal
+  kind: rss
+  url: https://rohanvenkat.substack.com/feed
+  home: https://rohanvenkat.substack.com/
+  verified: true
+  last7d: 1
+  latest: 2026-10-23
+  paywall: false
+  why: Weekly curated reading list of the best India analysis and Q&As with reporters and academics; low volume, high hit rate
+  note: weekly-ish
+
+- topic: india-news
+  name: Finshots
+  tier: early-signal
+  kind: rss
+  url: https://finshots.in/rss/
+  home: https://finshots.in/
+  verified: true
+  last7d: 7
+  latest: 2026-10-29
+  paywall: false
+  why: Daily 3-minute explainer of one India economy/policy story; good first-pass importance filter
+  note: ""
+
+- topic: india-news
+  name: Data for India (Rukmini S)
+  tier: early-signal
+  kind: rss
+  url: https://www.dataforindia.com/feed
+  home: https://www.dataforindia.com/
+  verified: true
+  last7d: 3
+  latest: 2026-10-28
+  paywall: false
+  why: Chart-first explainers on Indian economy and society from official data; corrects the number-free narratives
+  note: IndiaSpend feed is 403 for bots (isignal.in/google_feeds.xml); not listed
+
+- topic: india-news
+  name: Indian Express Explained
+  tier: early-signal
+  kind: rss
+  url: https://indianexpress.com/section/explained/feed/
+  home: https://indianexpress.com/section/explained/
+  verified: true
+  last7d: 59
+  latest: 2026-10-29
+  paywall: false
+  why: Best mainstream explainer desk in India; background on every big policy, court and foreign-affairs story
+  note: ""
+
+- topic: india-news
+  name: The Hindu Editorials
+  tier: early-signal
+  kind: rss
+  url: https://www.thehindu.com/opinion/editorial/feeder/default.rss
+  home: https://www.thehindu.com/opinion/editorial/
+  verified: true
+  last7d: 12
+  latest: 2026-10-30
+  paywall: false
+  why: "Two editorials a day: a reliable signal of which two stories mattered that day"
+  note: Indian Express editorials also verified, https://indianexpress.com/section/opinion/editorials/feed/ (17/7d)
+
+- topic: india-news
+  name: Newslaundry + Caravan + Morning Context via Google News
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:newslaundry.com+OR+site:caravanmagazine.in+OR+site:themorningcontext.com&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.newslaundry.com/
+  verified: true
+  last7d: 7
+  latest: 2026-10-29
+  paywall: true
+  why: Media critique, long-form investigations and business deep dives from three outlets that have no working feed
+  note: Newslaundry Quintype feeds return empty channel; Caravan and Morning Context have no RSS; all three are subscriber-funded
+
+- topic: india-news
+  name: NDTV Top Stories
+  tier: mainstream
+  kind: rss
+  url: https://feeds.feedburner.com/ndtvnews-top-stories
+  home: https://www.ndtv.com/
+  verified: true
+  last7d: 20
+  latest: 2026-10-30
+  paywall: false
+  why: What TV news is leading with; confirmation layer
+  note: ""
+
+- topic: india-news
+  name: Indian Express India
+  tier: mainstream
+  kind: rss
+  url: https://indianexpress.com/section/india/feed/
+  home: https://indianexpress.com/section/india/
+  verified: true
+  last7d: 200
+  latest: 2026-10-29
+  paywall: false
+  why: Highest-volume quality national desk; also the best reporting on Delhi-NCR governance
+  note: 200 items per fetch; heavy. The Hindu national (https://www.thehindu.com/news/national/feeder/default.rss, 60/7d) and TOI top stories (https://timesofindia.indiatimes.com/rssfeedstopstories.cms, 46/7d) also verified
+
+- topic: india-news
+  name: Google News India top stories
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/?hl=en-IN&gl=IN&ceid=IN:en
+  verified: true
+  last7d: 38
+  latest: 2026-10-29
+  paywall: false
+  why: Cross-outlet consensus of what is big right now; use for ranking, not reading
+  note: Election Commission has no feed (eci.gov.in is a JS app); use https://news.google.com/rss/search?q=%22Election+Commission%22+India&hl=en-IN&gl=IN&ceid=IN:en (verified 58/7d) when elections are on
+
+# ---------------------------------------------------------------- gurgaon-local
+- topic: gurgaon-local
+  name: Open-Meteo Air Quality API (Gurugram)
+  tier: primary
+  kind: api
+  url: https://air-quality-api.open-meteo.com/v1/air-quality?latitude=28.4595&longitude=77.0266&current=pm2_5,pm10,us_aqi,european_aqi&hourly=pm2_5,pm10,us_aqi&timezone=Asia%2FKolkata&forecast_days=2
+  home: https://open-meteo.com/en/docs/air-quality-api
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Free, keyless hourly PM2.5/PM10/AQI now-cast and 2-day forecast for Gurugram; the number to put at the top of the brief every winter morning
+  note: curl on 2026-10-30 returned 200 with current us_aqi=152; checker cannot parse non-feed JSON so verified stays false. Model-based (CAMS), not a CPCB station reading
+
+- topic: gurgaon-local
+  name: WAQI / aqicn.org station API (Gurugram)
+  tier: primary
+  kind: api
+  url: https://api.waqi.info/feed/geo:28.4595;77.0266/?token=YOUR_TOKEN
+  home: https://aqicn.org/city/india/gurgaon/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Actual CPCB/HSPCB monitoring-station readings (Vikas Sadan, Sector 51, Teri Gram) and the official-style Indian AQI, which is what GRAP triggers use
+  note: needs a free token from https://aqicn.org/data-platform/token/ (demo token only returns a Shanghai station). CPCB itself has no public API
+
+- topic: gurgaon-local
+  name: IMD CAP weather alerts (India, English)
+  tier: primary
+  kind: rss
+  url: https://cap-sources.s3.amazonaws.com/in-imd-en/rss.xml
+  home: https://mausam.imd.gov.in/
+  verified: true
+  last7d: 0
+  latest: null
+  paywall: false
+  why: Official IMD warnings (fog, heat, heavy rain, thunderstorm) as CAP alerts; empty when nothing is active, fills during monsoon and fog season
+  note: feed was empty (0 items) on 2026-10-30 because no alert was active; filter alerts by area name Haryana/Gurugram. IMD's own site has no RSS
+
+- topic: gurgaon-local
+  name: GMDA announcements
+  tier: primary
+  kind: scrape
+  url: https://gmda.gov.in/
+  home: https://gmda.gov.in/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Official notices on water supply shutdowns, road works, mobility plans and tenders for Gurugram
+  note: no feed; scrape the homepage announcement links (<a class="announcement-link" href="/getnews.html?fid=...">). MCG (https://www.mcg.gov.in/) is JS-rendered with no visible notice links; rely on news feeds for MCG
+
+- topic: gurgaon-local
+  name: CAQM GRAP orders
+  tier: primary
+  kind: scrape
+  url: https://caqm.nic.in/landingpage/pages/home
+  home: https://caqm.nic.in/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: The body that invokes and revokes GRAP stages for Delhi-NCR (construction bans, diesel-vehicle curbs, WFH advisories)
+  note: Angular SPA, no feed; scrape needs a headless browser. The gnews 'GRAP Delhi NCR' feed below catches every stage change within hours and is the practical substitute
+
+- topic: gurgaon-local
+  name: Gurugram Traffic Police (X)
+  tier: primary
+  kind: x
+  url: https://x.com/TrafficGGM
+  home: https://x.com/TrafficGGM
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Same-day diversions, VIP movement closures and advisories for NH-48, Sohna Road and SPR, before press coverage
+  note: needs X API. DMRC service updates are likewise on @OfficialDMRC; DMRC press-release page is JS-rendered
+
+- topic: gurgaon-local
+  name: r/gurgaon
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/gurgaon/top/.rss?t=day
+  home: https://www.reddit.com/r/gurgaon/
+  verified: true
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Residents reporting waterlogging, outages, scams and commute chaos hours before outlets do
+  note: Reddit rate-limits hard; poll once a day with 6s+ spacing and a stable User-Agent
+
+- topic: gurgaon-local
+  name: Google News - Gurugram traffic
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=Gurugram+traffic&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 12
+  latest: 2026-10-29
+  paywall: false
+  why: Diversions, closures, Dwarka Expressway and NH-48 works across all outlets in one feed
+  note: a tighter query for diversion/road-closed/traffic-advisory/waterlogging verified but only 0/7d outside monsoon
+
+- topic: gurgaon-local
+  name: Google News - GRAP Delhi NCR
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=GRAP+Delhi+NCR&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 23
+  latest: 2026-10-29
+  paywall: false
+  why: Every GRAP stage invocation/revocation and what it bans; the Oct-Jan essential
+  note: ""
+
+- topic: gurgaon-local
+  name: Google News - Gurugram metro
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=Gurugram+metro&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 11
+  latest: 2026-10-29
+  paywall: false
+  why: Gurugram Metro (Millennium City Centre to Cyber City) construction milestones, Rapid Metro changes, Yellow Line extension
+  note: broader 'Delhi Metro OR DMRC' query verified 36/7d if Delhi-side disruptions are wanted
+
+- topic: gurgaon-local
+  name: Google News - Gurugram water/power cuts
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=Gurugram+%28water+OR+power%29+%28cut+OR+supply%29&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 41
+  latest: 2026-10-29
+  paywall: false
+  why: Scheduled GMDA water shutdowns and DHBVN outages, which otherwise only appear as notices
+  note: noisy; downrank items without a sector or date
+
+- topic: gurgaon-local
+  name: Google News - Gurugram property / RERA / stilt+4
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=Gurugram+%28RERA+OR+%22stilt+plus+four%22+OR+registry+OR+%22property+registration%22%29&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://haryanarera.gov.in/
+  verified: true
+  last7d: 3
+  latest: 2026-10-28
+  paywall: false
+  why: Haryana government decisions on registration, circle rates, stilt+4 and HARERA orders that touch residents' money
+  note: HARERA site (https://haryanarera.gov.in/) is up but has no feed; 'Haryana government Gurugram' query also verified (14/7d)
+
+- topic: gurgaon-local
+  name: Hindustan Times Gurugram
+  tier: mainstream
+  kind: rss
+  url: https://www.hindustantimes.com/feeds/rss/cities/gurugram-news/rssfeed.xml
+  home: https://www.hindustantimes.com/cities/gurugram-news
+  verified: true
+  last7d: 22
+  latest: 2026-10-29
+  paywall: false
+  why: The only daily with a dedicated Gurugram bureau; civic, GMDA/MCG and crime coverage
+  note: ""
+
+- topic: gurgaon-local
+  name: Times of India Gurgaon
+  tier: mainstream
+  kind: rss
+  url: https://timesofindia.indiatimes.com/rssfeeds/6547154.cms
+  home: https://timesofindia.indiatimes.com/city/gurgaon
+  verified: true
+  last7d: 20
+  latest: 2026-10-30
+  paywall: false
+  why: Second city desk; often first on traffic-police advisories and court orders on builders
+  note: Tribune Haryana RSS is bot-blocked (403), not listed
+
+- topic: gurgaon-local
+  name: Google News - Gurugram (all)
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=Gurugram&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 94
+  latest: 2026-10-29
+  paywall: false
+  why: Catch-all for everything else (events, crime, politics); use for ranking and dedup against the two city feeds
+  note: ""
+
+# ---------------------------------------------------------------- movies
+- topic: movies
+  name: TMDB Discover API (region IN)
+  tier: primary
+  kind: api
+  url: https://api.themoviedb.org/3/discover/movie?region=IN&with_release_type=3|4&primary_release_date.gte=2026-10-23&primary_release_date.lte=2026-10-30&sort_by=popularity.desc&api_key=YOUR_KEY
+  home: https://developer.themoviedb.org/reference/discover-movie
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Machine-readable 'what released in India this week' (theatrical type 3, digital type 4) with TMDB vote averages, posters and streaming providers (/movie/{id}/watch/providers?watch_region=IN)
+  note: free API key required. Unauthenticated curl from this machine was blocked by Akamai (Access Denied); test with a key. Free key signup at https://www.themoviedb.org/settings/api
+
+- topic: movies
+  name: IMDb datasets (title.ratings)
+  tier: primary
+  kind: api
+  url: https://datasets.imdbws.com/title.ratings.tsv.gz
+  home: https://developer.imdb.com/non-commercial-datasets/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Nightly bulk IMDb ratings and vote counts for every title; the only machine-readable IMDb rating source (no public IMDb API)
+  note: curl HEAD returned 200 (8.7 MB gzip, refreshed daily); join on tconst with title.basics.tsv.gz. Non-commercial licence
+
+- topic: movies
+  name: OMDb API
+  tier: primary
+  kind: api
+  url: https://www.omdbapi.com/?t=TITLE&y=2026&apikey=YOUR_KEY
+  home: https://www.omdbapi.com/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: One call returns IMDb, Rotten Tomatoes and Metacritic scores for a title; the cheapest way to get RT/MC numbers without scraping
+  note: free key (1,000 req/day); curl without key returned a valid JSON error. Rotten Tomatoes and Metacritic have no API (Metacritic RSS is 410 Gone); if OMDb's RT field is empty, scrape https://www.rottentomatoes.com/browse/movies_in_theaters/sort:newest
+
+- topic: movies
+  name: BookMyShow Gurugram listings
+  tier: primary
+  kind: scrape
+  url: https://in.bookmyshow.com/explore/movies-gurugram
+  home: https://in.bookmyshow.com/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: What is actually playing in Gurugram this week plus the BookMyShow audience rating that Indian releases live or die by
+  note: no API; JS-rendered, needs headless browser; ratings are in the page JSON
+
+- topic: movies
+  name: Baradwaj Rangan (blog)
+  tier: early-signal
+  kind: rss
+  url: https://baradwajrangan.wordpress.com/feed/
+  home: https://baradwajrangan.wordpress.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-28
+  paywall: false
+  why: The South critic; written reviews of Tamil/Telugu/Malayalam releases the week they open
+  note: ""
+
+- topic: movies
+  name: Galatta Plus (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCTTUsQJAdGSd2mMsGGfvzhQ
+  home: https://www.youtube.com/@galattaplus
+  verified: true
+  last7d: 15
+  latest: 2026-10-29
+  paywall: false
+  why: Baradwaj Rangan's video reviews and roundtables on South and Hindi releases; the crossover-hit early warning
+  note: ""
+
+- topic: movies
+  name: Sucharita Tyagi (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCUKMwyc8Rz8Blh8E2y8caXg
+  home: https://www.youtube.com/@SucharitaTyagi
+  verified: true
+  last7d: 2
+  latest: 2026-10-26
+  paywall: false
+  why: Independent Hindi-film and streaming reviews with a clear watch/skip verdict
+  note: Film Companion is defunct (site last updated 2024-09, main YouTube handle gone); Anupama Chopra and Rahul Desai now publish at Hollywood Reporter India
+
+- topic: movies
+  name: Hollywood Reporter India reviews via Google News
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:hollywoodreporterindia.com+OR+site:filmcompanion.in+review&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.hollywoodreporterindia.com/
+  verified: true
+  last7d: 19
+  latest: 2026-10-29
+  paywall: false
+  why: Anupama Chopra and Rahul Desai reviews of Hindi and streaming releases
+  note: hollywoodreporterindia.com Quintype feeds (/feed, /stories.rss) return an empty channel, hence the Google News proxy
+
+- topic: movies
+  name: What's on Netflix
+  tier: early-signal
+  kind: rss
+  url: https://www.whats-on-netflix.com/feed/
+  home: https://www.whats-on-netflix.com/
+  verified: true
+  last7d: 50
+  latest: 2026-10-29
+  paywall: false
+  why: Earliest tracker of Netflix additions and removals, including India-region titles and weekly 'new this week' lists
+  note: global; filter for India/'coming to Netflix' posts. JustWatch has no public API, scrape https://www.justwatch.com/in/new for Prime/JioHotstar additions
+
+- topic: movies
+  name: Google News - OTT releases this week India
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=OTT+releases+this+week+India&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://news.google.com/
+  verified: true
+  last7d: 33
+  latest: 2026-10-29
+  paywall: false
+  why: Weekly Netflix/Prime/JioHotstar/SonyLIV release roundups from OTTplay, Binged and the dailies, none of which expose a usable feed
+  note: OTTplay has no feed; Binged feed is 403; this proxy covers both
+
+- topic: movies
+  name: Letterboxd popular this week
+  tier: early-signal
+  kind: scrape
+  url: https://letterboxd.com/films/popular/this/week/
+  home: https://letterboxd.com/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Cinephile consensus (ratings plus watch counts) a week after release, usually sharper than IMDb for non-blockbusters
+  note: no public API (partner-only); only user diaries have RSS. Film Companion/critic Letterboxd RSS feeds exist but are dormant
+
+- topic: movies
+  name: r/bollywood
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/bollywood/top/.rss?t=day
+  home: https://www.reddit.com/r/bollywood/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Fastest audience verdict on Hindi releases (first-day-first-show threads) and box-office chatter
+  note: verified on 3rd attempt after 90s cooldown; Reddit 429s aggressively, poll once daily. r/kollywood also verified (top/.rss?t=week, 25 posts/week) and worth adding for South crossovers; r/tollywood and r/MovieSuggestions could not be checked (429)
+
+- topic: movies
+  name: r/movies
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/movies/top/.rss?t=day
+  home: https://www.reddit.com/r/movies/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Official discussion threads and review-embargo roundups for Hollywood releases
+  note: HTTP 429 on all three attempts (60s, 75s, 90s cooldowns) while smaller subs succeeded; URL pattern is correct, re-verify from the pipeline host with 10s+ spacing
+
+- topic: movies
+  name: The Hindu movie reviews
+  tier: mainstream
+  kind: rss
+  url: https://www.thehindu.com/entertainment/reviews/feeder/default.rss
+  home: https://www.thehindu.com/entertainment/reviews/
+  verified: true
+  last7d: 14
+  latest: 2026-10-29
+  paywall: false
+  why: Same-week reviews across Hindi, Tamil, Telugu, Malayalam and Hollywood releases from one desk
+  note: Indian Express movie reviews (https://indianexpress.com/section/entertainment/movie-review/feed/, 12/7d) and Bollywood Hungama trade news (https://www.bollywoodhungama.com/rss/news.xml, 50/7d, release dates and box office) also verified
+
+- topic: movies
+  name: Variety Film
+  tier: mainstream
+  kind: rss
+  url: https://variety.com/v/film/feed/
+  home: https://variety.com/v/film/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: Hollywood release and review-embargo news; confirmation for international titles
+  note: Deadline Film (https://deadline.com/v/film/feed/, 12/7d) and Rotten Tomatoes editorial (https://editorial.rottentomatoes.com/feed/, 3 MB, 35 items, latest 2026-10-29 via curl; checker truncates at 2 MB) are alternatives
+
+# ============================================================ cluster: sports
+# Sports cluster source map — topics: football, cricket, tennis-f1
+# Built 2026-10-30. Every feed was run through tools/checkfeed.py; see work-sports/*.out.
+# Conventions used in `note`:
+#  - "checker truncates" = feed is >2 MB, checkfeed.py reads only the first 2 MB and fails the XML parse;
+#    numbers come from a full fetch + parse (work-sports/bigfeeds.out). verified stays false per the brief.
+#  - "Reddit 429" = Reddit returns 429 to the checker's UA even after 60 s; numbers come from a manual
+#    curl with a Chrome UA (work-sports/reddit_manual.out, reddit_slow.out). Pipeline must use a browser UA.
+
+# ---------------------------------------------------------------- football
+- topic: football
+  name: "FC Barcelona official news (via Google News site: query)"
+  tier: primary
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:fcbarcelona.com&hl=en-US&gl=US&ceid=US:en
+  home: https://www.fcbarcelona.com/en/football/first-team/news
+  verified: true
+  last7d: 19
+  latest: 2026-10-29
+  paywall: false
+  why: The club's own statements, injury updates, squad lists and pressers, with zero commentary.
+  note: fcbarcelona.com has no RSS; if the Google index lags, scrape the first-team news page (server-rendered list under .feed__items).
+
+- topic: football
+  name: FC Barcelona fixtures (ESPN schedule API)
+  tier: primary
+  kind: api
+  url: https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/schedule
+  home: https://www.espn.com/soccer/team/fixtures/_/id/83/barcelona
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Machine-readable "Barca play tonight at 1:30 am IST" - events[] with ISO-8601 UTC kick-off, opponent, venue, competition.
+  note: Checker cannot parse this JSON shape, but curl returns HTTP 200 with 10 LaLiga events (checked 2026-10-30). Undocumented, no key. Team id 83 = Barcelona. Swap league slug for other comps - uefa.champions (3 events returned), esp.copa_del_rey. Convert UTC to IST (+5:30). Poll once a day, not per minute. football-data.org v4 is the documented alternative but needs a free API key (403 without).
+
+- topic: football
+  name: "AIFF + Indian Super League official (via Google News site: query)"
+  tier: primary
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:the-aiff.com+OR+site:indiansuperleague.com&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.the-aiff.com/
+  verified: true
+  last7d: 26
+  latest: 2026-10-29
+  paywall: false
+  why: Federation and league announcements (squads, disciplinary, calendar, AIFF governance) straight from source.
+  note: Neither site publishes RSS. ISL fixtures - ESPN https://site.api.espn.com/apis/site/v2/sports/soccer/ind.1/scoreboard returns 200 JSON (curl-checked).
+
+- topic: football
+  name: r/Barca (daily top)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/Barca/top/.rss?t=day
+  home: https://www.reddit.com/r/Barca/
+  verified: false
+  last7d: 12
+  latest: 2026-10-29
+  paywall: false
+  why: Where Spanish-press scoops (RAC1, Sport, MD, Romero) get translated and argued over within minutes; match threads and tactical post-mortems.
+  note: Reddit 429 - checker UA blocked; manual Chrome-UA fetch on 2026-10-30 returned 200 Atom with 12 entries. Use a browser UA and >=60 s spacing between Reddit calls.
+
+- topic: football
+  name: Barca Blaugranes (SB Nation)
+  tier: early-signal
+  kind: atom
+  url: https://www.barcablaugranes.com/rss/index.xml
+  home: https://www.barcablaugranes.com/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: English-language Barca blog with opinion, player ratings and round-ups of the Catalan press.
+  note: ""
+
+- topic: football
+  name: Barca Universal
+  tier: early-signal
+  kind: rss
+  url: https://barcauniversal.com/feed/
+  home: https://barcauniversal.com/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: Fastest English relay of Spanish-press Barca lines (transfers, injuries, Flick quotes) - hours ahead of English mainstream.
+  note: Their YouTube channel is dormant (last upload 2024-04); use the site feed only.
+
+- topic: football
+  name: Mundo Deportivo (English edition)
+  tier: early-signal
+  kind: rss
+  url: https://www.mundodeportivo.com/feed/rss/en
+  home: https://www.mundodeportivo.com/en
+  verified: true
+  last7d: 91
+  latest: 2026-10-29
+  paywall: false
+  why: One of the two Barcelona dailies that actually break club news; this is the original source Barca Universal and r/Barca rewrite.
+  note: High volume and all-sport; filter titles on Barcelona/Barca. Sport.es English has no feed - nearest is Google News https://news.google.com/rss/search?q=site:sport.es+Barcelona&hl=en-US&gl=US&ceid=US:en (verified, 64/7d, mostly Spanish-language items).
+
+- topic: football
+  name: The Athletic - Football
+  tier: early-signal
+  kind: rss
+  url: https://www.nytimes.com/athletic/rss/football/
+  home: https://theathletic.com/football/
+  verified: true
+  last7d: 80
+  latest: 2026-10-29
+  paywall: true
+  why: The long-form tactical and insider writing the user named explicitly (Cox, Ornstein, Guillem Balague-style La Liga reporting).
+  note: Headline + teaser only. Author feeds follow the same pattern - Michael Cox (Zonal Marking) is https://www.nytimes.com/athletic/rss/author/michael-cox/ (verified, 3/7d, latest 2026-10-26) if you want to boost him in ranking. Team/league sub-feeds returned 404/500.
+
+- topic: football
+  name: Tifo Football (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCGYYNGmyhZ_kwBF_lqqXdAQ
+  home: https://www.youtube.com/@TifoFootball
+  verified: true
+  last7d: 9
+  latest: 2026-10-29
+  paywall: false
+  why: Illustrated tactics explainers - the best "why did that work" content in football video.
+  note: Channel is now branded "Tifo Football by The Athletic"; same channel id.
+
+- topic: football
+  name: Tifo Football Podcast
+  tier: early-signal
+  kind: podcast
+  url: https://feeds.acast.com/public/shows/681cccd63e6644d7a3b3065c
+  home: https://shows.acast.com/tifo-football-podcast
+  verified: false
+  last7d: 4
+  latest: 2026-10-29
+  paywall: false
+  why: Audio companion to Tifo - tactics and data discussion rather than banter.
+  note: checker truncates (feed is 2.2 MB); full fetch parsed 697 items, 4 in last 7 days.
+
+- topic: football
+  name: The Athletic FC Tactics Podcast
+  tier: early-signal
+  kind: podcast
+  url: https://feeds.acast.com/public/shows/681ccc7c8b1f3232bc1e797e
+  home: https://theathletic.com/podcasts/
+  verified: true
+  last7d: 1
+  latest: 2026-10-23
+  paywall: false
+  why: Michael Cox and co. on one tactical theme per episode - exactly the "people discussing football" format requested.
+  note: Weekly-ish; free to listen.
+
+- topic: football
+  name: The Analyst (Opta)
+  tier: early-signal
+  kind: rss
+  url: https://theanalyst.com/feed/
+  home: https://theanalyst.com/
+  verified: true
+  last7d: 47
+  latest: 2026-10-29
+  paywall: false
+  why: Opta's own data-driven pieces (xG, pressing, supercomputer odds) with the underlying numbers - not available elsewhere for free.
+  note: All-sport feed; filter on football/soccer categories.
+
+- topic: football
+  name: Spielverlagerung
+  tier: early-signal
+  kind: rss
+  url: https://spielverlagerung.com/feed/
+  home: https://spielverlagerung.com/
+  verified: true
+  last7d: 1
+  latest: 2026-10-24
+  paywall: false
+  why: Deepest pure-tactics match analyses on the web (German school; English edition). Low volume, very high signal.
+  note: Roughly 1-4 posts a month.
+
+- topic: football
+  name: Jonathan Wilson (Guardian column)
+  tier: early-signal
+  kind: rss
+  url: https://www.theguardian.com/profile/jonathanwilson/rss
+  home: https://www.theguardian.com/profile/jonathanwilson
+  verified: true
+  last7d: 4
+  latest: 2026-10-26
+  paywall: false
+  why: Inverting the Pyramid author; weekly historical-tactical essay. No paywall.
+  note: ""
+
+- topic: football
+  name: No Grass in the Clouds (Ryan O'Hanlon)
+  tier: early-signal
+  kind: rss
+  url: https://nograssintheclouds.substack.com/feed
+  home: https://nograssintheclouds.substack.com/
+  verified: true
+  last7d: 1
+  latest: 2026-10-23
+  paywall: false
+  why: ESPN's data writer thinking out loud on Substack - analytics-literate but readable.
+  note: Some posts are paid; feed carries full text for free posts.
+
+- topic: football
+  name: r/soccer (daily top)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/soccer/top/.rss?t=day
+  home: https://www.reddit.com/r/soccer/
+  verified: false
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: The global football water-cooler; a good tactical thread or a Tier-1 journalist tweet surfaces here first.
+  note: Reddit 429 - checker UA blocked; manual Chrome-UA fetch on 2026-10-30 returned 200 Atom with 25 entries. Use a browser UA and >=60 s spacing between Reddit calls.
+
+- topic: football
+  name: r/FootballTactics (daily top)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/FootballTactics/top/.rss?t=day
+  home: https://www.reddit.com/r/FootballTactics/
+  verified: false
+  last7d: 1
+  latest: 2026-10-29
+  paywall: false
+  why: Small sub devoted to tactical discussion and diagram posts; no scores, no transfers.
+  note: Reddit 429 - checker UA blocked; manual Chrome-UA fetch on 2026-10-30 returned 200 Atom with only 1 entry - a low-volume sub (a post or two a day; many days are empty). Use a browser UA and >=60 s spacing between Reddit calls.
+
+- topic: football
+  name: Guardian Football Weekly (podcast)
+  tier: early-signal
+  kind: podcast
+  url: https://www.theguardian.com/football/series/footballweekly/podcast.xml
+  home: https://www.theguardian.com/football/series/footballweekly
+  verified: true
+  last7d: 3
+  latest: 2026-10-29
+  paywall: false
+  why: The user's named discussion podcast; Barney Ronay, Jonathan Wilson and Sid Lowe (La Liga) are regulars.
+  note: Totally Football Show feed also alive (https://feeds.acast.com/public/shows/6818cd43eb146d8e35d312c7, 3/7d) but is 7 MB - add only if you want a second chat pod.
+
+- topic: football
+  name: r/IndianFootball (daily top)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/IndianFootball/top/.rss?t=day
+  home: https://www.reddit.com/r/IndianFootball/
+  verified: false
+  last7d: 7
+  latest: 2026-10-29
+  paywall: false
+  why: The one place Indian football news, AIFF politics and ISL drama are discussed daily by people who follow it closely.
+  note: Reddit 429 - checker UA blocked; manual Chrome-UA fetch on 2026-10-30 returned 200 Atom with 7 entries. Use a browser UA and >=60 s spacing between Reddit calls.
+
+- topic: football
+  name: Arunava about Football
+  tier: early-signal
+  kind: rss
+  url: https://arunfoot.com/feed/
+  home: https://arunfoot.com/
+  verified: true
+  last7d: 10
+  latest: 2026-10-29
+  paywall: false
+  why: Longest-running independent Indian football blog - AIFF politics, I-League, state leagues and youth that mainstream never covers.
+  note: Football Paradise (410 Gone), 90ndstoppage (timeouts) and The Away End podcast (last episode 2023) are dead; dropped.
+
+- topic: football
+  name: Marcus Mergulhao (TOI, X)
+  tier: early-signal
+  kind: x
+  url: https://x.com/marcusmergulhao
+  home: https://x.com/marcusmergulhao
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: The best-sourced Indian football reporter; AIFF and ISL breaking news lands on his X first.
+  note: needs X API; no newsletter or blog found.
+
+- topic: football
+  name: Guardian Football
+  tier: mainstream
+  kind: rss
+  url: https://www.theguardian.com/football/rss
+  home: https://www.theguardian.com/football
+  verified: true
+  last7d: 37
+  latest: 2026-10-29
+  paywall: false
+  why: Mainstream confirmation with the best feature writing of the dailies; covers La Liga and UCL, not just PL.
+  note: Narrower feeds verified too - Barcelona tag https://www.theguardian.com/football/barcelona/rss (7/7d), La Liga https://www.theguardian.com/football/laligafootball/rss (9/7d).
+
+- topic: football
+  name: BBC Sport Football
+  tier: mainstream
+  kind: rss
+  url: https://feeds.bbci.co.uk/sport/football/rss.xml
+  home: https://www.bbc.com/sport/football
+  verified: true
+  last7d: 63
+  latest: 2026-10-29
+  paywall: false
+  why: Fast, neutral confirmation feed for PL/UCL; useful only once something is already mainstream.
+  note: PL-heavy.
+
+- topic: football
+  name: Khel Now
+  tier: mainstream
+  kind: rss
+  url: https://khelnow.com/feed/
+  home: https://khelnow.com/football
+  verified: true
+  last7d: 100
+  latest: 2026-10-30
+  paywall: false
+  why: Highest-volume Indian sports outlet for ISL/I-League/national team coverage.
+  note: All-sport feed, no football-only feed exists (category feeds 404) - filter by category tag. Sportstar's football feed https://sportstar.thehindu.com/football/feeder/default.rss (verified, 19/7d) is a quieter alternative.
+
+# ---------------------------------------------------------------- cricket
+- topic: cricket
+  name: ESPNcricinfo live scores / current matches
+  tier: primary
+  kind: rss
+  url: https://www.espncricinfo.com/rss/livescores.xml
+  home: https://www.espncricinfo.com/live-cricket-score
+  verified: true
+  last7d: 0
+  latest: null
+  paywall: false
+  why: Machine-readable list of matches in progress or starting today - the "what's on" feed for fixtures.
+  note: Items carry no pubDate (hence last7d 0); 22 current matches listed at check time. Each item links to the scorecard.
+
+- topic: cricket
+  name: "BCCI + ICC official (via Google News site: query)"
+  tier: primary
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:bcci.tv+OR+site:icc-cricket.com&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.bcci.tv/
+  verified: true
+  last7d: 100
+  latest: 2026-10-29
+  paywall: false
+  why: Squad announcements, schedules, rule changes and rankings straight from the governing bodies.
+  note: Neither bcci.tv nor icc-cricket.com publishes RSS (404). High volume because ICC posts match reports; downweight those.
+
+- topic: cricket
+  name: CricketData.org (cricAPI) fixtures API
+  tier: primary
+  kind: api
+  url: https://api.cricapi.com/v1/matches?apikey=YOUR_KEY&offset=0
+  home: https://cricketdata.org/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Documented fixtures/scores JSON with start times - the only clean fixtures API that does not require scraping.
+  note: Free tier is 100 calls/day with a key; not checked without one. Cricinfo's own JSON (hs-consumer-api.espncricinfo.com) returns 403 to non-browser clients. ESPN's undocumented header endpoint https://site.web.api.espn.com/apis/v2/scoreboard/header?sport=cricket returns 200 (curl-checked) and lists current leagues/events keyless.
+
+- topic: cricket
+  name: r/Cricket (daily top)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/Cricket/top/.rss?t=day
+  home: https://www.reddit.com/r/Cricket/
+  verified: false
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Largest cricket community; Kimber videos, Cricinfo long reads and selection controversies get dissected here first.
+  note: Reddit 429 - checker UA blocked; manual Chrome-UA fetch on 2026-10-30 returned 200 Atom with 25 entries. Use a browser UA and >=60 s spacing between Reddit calls.
+
+- topic: cricket
+  name: Good Areas (Jarrod Kimber) - Substack
+  tier: early-signal
+  kind: rss
+  url: https://www.goodareas.co/feed
+  home: https://www.goodareas.co/
+  verified: true
+  last7d: 2
+  latest: 2026-10-28
+  paywall: false
+  why: Kimber's written analysis - data-led, contrarian, the opposite of reaction content.
+  note: Same feed also served at https://wickets.substack.com/feed. Old blog jarrodkimber.com is dead (2019).
+
+- topic: cricket
+  name: Good Areas with Jarrod Kimber (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCgxAV5Px6mAlbjh0-AU9xIA
+  home: https://www.youtube.com/@JarrodKimberYT
+  verified: true
+  last7d: 15
+  latest: 2026-10-29
+  paywall: false
+  why: Daily video breakdowns of matches, selections and tactics with charts; the best analysis channel in cricket.
+  note: High volume (15/wk); keep but rank below the Substack.
+
+- topic: cricket
+  name: Good Areas Podcast
+  tier: early-signal
+  kind: podcast
+  url: https://feeds.simplecast.com/OCjI_9eh
+  home: https://www.goodareas.co/
+  verified: false
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Audio of the Kimber shows for when video is not convenient.
+  note: checker truncates (feed is 4.2 MB); full fetch parsed 600 items, 5 in last 7 days. Overlaps heavily with the YouTube feed - dedupe on title.
+
+- topic: cricket
+  name: Cricket Et Al (Gideon Haigh + Peter Lalor) - Substack
+  tier: early-signal
+  kind: rss
+  url: https://cricketetal.substack.com/feed
+  home: https://cricketetal.substack.com/
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: false
+  why: The best writing in cricket (Haigh) plus a reporter (Lalor) - essays, history, administration politics.
+  note: Many entries are podcast-episode posts; dedupe against the podcast feed below.
+
+- topic: cricket
+  name: Cricket Et Al (podcast)
+  tier: early-signal
+  kind: podcast
+  url: https://www.omnycontent.com/d/playlist/d3d56d8d-11c9-411a-aade-af8f001be4a7/0dd1e456-74d1-4bcc-9639-b15000764415/94f1778d-411f-4bc2-be4e-b15000775476/podcast.rss
+  home: https://cricketetal.com/
+  verified: true
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Successor to Cricket Et Cetera - long conversational episodes, Australian and global cricket.
+  note: Feed is 0.8 MB so it passes the checker (208 episodes).
+
+- topic: cricket
+  name: The Final Word Cricket Podcast
+  tier: early-signal
+  kind: podcast
+  url: https://feeds.megaphone.fm/COMG4127829564
+  home: https://www.finalwordcricket.com/
+  verified: false
+  last7d: 5
+  latest: 2026-10-29
+  paywall: false
+  why: Adam Collins and Geoff Lemon - the most-listened independent cricket show; interviews and analysis.
+  note: checker truncates (feed is 12 MB); full fetch parsed 1718 items, 5 in last 7 days. Cricket Unfiltered (https://feeds.megaphone.fm/COMG4173210327, 3/7d) is alive too but Australia-centric; skipped.
+
+- topic: cricket
+  name: The Grade Cricketer (podcast)
+  tier: early-signal
+  kind: podcast
+  url: https://www.omnycontent.com/d/playlist/d3d56d8d-11c9-411a-aade-af8f001be4a7/f9ddc13f-8a37-4937-81c7-b081006fa5c2/ebea9171-5a2f-4a13-96e0-b081006fa5e8/podcast.rss
+  home: https://thegradecricketer.com/
+  verified: false
+  last7d: 4
+  latest: 2026-10-28
+  paywall: false
+  why: The fun one - satire and banter with surprisingly sharp takes.
+  note: checker truncates (feed is 3.2 MB); full fetch parsed 664 items, 4 in last 7 days. Their YouTube feed returns 0 items (uploads hidden); use the podcast.
+
+- topic: cricket
+  name: Sidharth Monga (ESPNcricinfo, via Google News)
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%22Sidharth+Monga%22&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.espncricinfo.com/author/sidharth-monga-15
+  verified: true
+  last7d: 4
+  latest: 2026-10-27
+  paywall: false
+  why: Cricinfo's best India-based writer; this isolates his pieces from the 100-a-week firehose.
+  note: Cricinfo author pages return 403 to bots, so the query is the only feed; includes occasional pieces that merely quote him.
+
+- topic: cricket
+  name: Wisden
+  tier: early-signal
+  kind: rss
+  url: https://www.wisden.com/feed
+  home: https://www.wisden.com/
+  verified: true
+  last7d: 50
+  latest: 2026-10-29
+  paywall: false
+  why: Features, stats pieces and tactical columns (e.g. T20 WC semi-final tactics) with more thought than the wires.
+  note: Only /feed works (with trailing slash it 404s). Mixed with quizzes and listicles - filter.
+
+- topic: cricket
+  name: "The Cricket Monthly (via Google News site: query)"
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:thecricketmonthly.com&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.thecricketmonthly.com/
+  verified: true
+  last7d: 0
+  latest: 2026-08-12
+  paywall: false
+  why: Cricinfo's long-form magazine - essays and profiles, a few a month.
+  note: Inherently slow; no RSS on the site. If the Google index misses pieces, scrape the homepage listing.
+
+- topic: cricket
+  name: ESPNcricinfo news
+  tier: mainstream
+  kind: rss
+  url: https://www.espncricinfo.com/rss/content/story/feeds/0.xml
+  home: https://www.espncricinfo.com/
+  verified: true
+  last7d: 100
+  latest: 2026-10-29
+  paywall: false
+  why: The reference outlet; everything official ends up here within the hour.
+  note: Firehose (100/wk). Country sub-feeds exist - India is 6.xml below, Australia 2.xml.
+
+- topic: cricket
+  name: ESPNcricinfo - India
+  tier: mainstream
+  kind: rss
+  url: https://www.espncricinfo.com/rss/content/story/feeds/6.xml
+  home: https://www.espncricinfo.com/team/india-6
+  verified: true
+  last7d: 22
+  latest: 2026-10-28
+  paywall: false
+  why: India-only slice of Cricinfo at a fifth of the volume.
+  note: ""
+
+- topic: cricket
+  name: "Cricbuzz (via Google News site: query)"
+  tier: mainstream
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:cricbuzz.com&hl=en-IN&gl=IN&ceid=IN:en
+  home: https://www.cricbuzz.com/cricket-news
+  verified: true
+  last7d: 100
+  latest: 2026-10-29
+  paywall: false
+  why: India's most-read cricket site; Harsha Bhogle and BCCI-sourced Indian team news.
+  note: Cricbuzz's own RSS is gone (/rss-feed 404; /rss/cricket-news returns an empty JSON body). Scrape /cricket-news if needed. Sportstar cricket feed https://sportstar.thehindu.com/cricket/feeder/default.rss (verified, 43/7d) is a cleaner Indian mainstream alternative.
+
+# ---------------------------------------------------------------- tennis-f1
+- topic: tennis-f1
+  name: "ATP + WTA official news (via Google News site: query)"
+  tier: primary
+  kind: gnews
+  url: https://news.google.com/rss/search?q=site:atptour.com+OR+site:wtatennis.com&hl=en-US&gl=US&ceid=US:en
+  home: https://www.atptour.com/en/news
+  verified: true
+  last7d: 51
+  latest: 2026-10-29
+  paywall: false
+  why: Tour announcements, rankings, entry lists and withdrawals from the two governing tours.
+  note: atptour.com does have an RSS at /en/media/rss-feed/xml-feed but it is Cloudflare-blocked (403) for non-browser clients; wtatennis.com and tennis.com have no feed at all.
+
+- topic: tennis-f1
+  name: ESPN tennis scoreboard (API)
+  tier: primary
+  kind: api
+  url: https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard
+  home: https://www.espn.com/tennis/schedule
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Keyless JSON of current tournaments and match order-of-play with UTC times.
+  note: Checker cannot parse the JSON shape; curl returns HTTP 200. Swap atp -> wta. Undocumented, poll gently.
+
+- topic: tennis-f1
+  name: r/tennis (daily top)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/tennis/top/.rss?t=day
+  home: https://www.reddit.com/r/tennis/
+  verified: false
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Fast on injuries, withdrawals and scheduling news; decent analysis threads during slams.
+  note: Reddit 429 - checker UA blocked; manual Chrome-UA fetch on 2026-10-30 returned 200 Atom with 25 entries. Use a browser UA and >=60 s spacing between Reddit calls.
+
+- topic: tennis-f1
+  name: Tennis Abstract / Heavy Topspin (Jeff Sackmann)
+  tier: early-signal
+  kind: rss
+  url: https://www.tennisabstract.com/blog/feed/
+  home: https://www.tennisabstract.com/blog/
+  verified: true
+  last7d: 0
+  latest: 2026-10-22
+  paywall: false
+  why: The only serious tennis analytics blog - serve/return stats, Elo, match-charting.
+  note: A few posts a month. His podcast feed is dead (last 2022).
+
+- topic: tennis-f1
+  name: Bounces (Ben Rothenberg)
+  tier: early-signal
+  kind: rss
+  url: https://www.benrothenberg.com/feed
+  home: https://www.benrothenberg.com/
+  verified: true
+  last7d: 2
+  latest: 2026-10-25
+  paywall: true
+  why: Best independent tennis reporter; tour politics, anti-doping cases and mailbags before mainstream picks them up.
+  note: Substack on a custom domain; most posts paid, feed carries headline + preview.
+
+- topic: tennis-f1
+  name: The Tennis Podcast
+  tier: early-signal
+  kind: podcast
+  url: https://feeds.acast.com/public/shows/4d90c19e-d564-4949-a998-27e24cca2aee
+  home: https://www.tennispodcast.net/
+  verified: false
+  last7d: 1
+  latest: 2026-10-26
+  paywall: false
+  why: Catherine Whitaker, David Law and Matt Roberts - the reference discussion show, daily during slams.
+  note: checker truncates (feed is 9.5 MB); full fetch parsed 1583 items, 1 in last 7 days.
+
+- topic: tennis-f1
+  name: Tennis Majors
+  tier: early-signal
+  kind: rss
+  url: https://www.tennismajors.com/feed/
+  home: https://www.tennismajors.com/
+  verified: true
+  last7d: 21
+  latest: 2026-10-29
+  paywall: false
+  why: Independent, interview-led site with more analysis than the wires; good on coaching changes.
+  note: ""
+
+- topic: tennis-f1
+  name: Brain Game Tennis (Craig O'Shannessy)
+  tier: early-signal
+  kind: scrape
+  url: https://www.braingametennis.com/
+  home: https://www.braingametennis.com/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Pattern-of-play analysis (first-four-shots, serve+1) from the analyst Djokovic used.
+  note: Site returns Cloudflare 403 to non-browser clients, including its /feed/; needs a headless browser. Low volume.
+
+- topic: tennis-f1
+  name: Jon Wertheim (X)
+  tier: early-signal
+  kind: x
+  url: https://x.com/jon_wertheim
+  home: https://x.com/jon_wertheim
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Tennis Channel/60 Minutes reporter; mailbag-style takes and insider notes.
+  note: needs X API; no newsletter or blog with a feed found.
+
+- topic: tennis-f1
+  name: BBC Sport Tennis
+  tier: mainstream
+  kind: rss
+  url: https://feeds.bbci.co.uk/sport/tennis/rss.xml
+  home: https://www.bbc.com/sport/tennis
+  verified: true
+  last7d: 13
+  latest: 2026-10-29
+  paywall: false
+  why: Clean mainstream confirmation feed.
+  note: Guardian tennis https://www.theguardian.com/sport/tennis/rss also verified (1/7d).
+
+- topic: tennis-f1
+  name: Formula1.com latest news
+  tier: primary
+  kind: rss
+  url: https://www.formula1.com/en/latest/all.xml
+  home: https://www.formula1.com/en/latest
+  verified: true
+  last7d: 0
+  latest: null
+  paywall: false
+  why: Official F1 news, FIA statements, driver announcements.
+  note: Items carry no pubDate (checker reports last7d 0 / latest null); use first-seen time. Only 10 items per fetch.
+
+- topic: tennis-f1
+  name: F1 calendar and session times (Jolpica / Ergast API)
+  tier: primary
+  kind: api
+  url: https://api.jolpi.ca/ergast/f1/current.json
+  home: https://api.jolpi.ca/
+  verified: false
+  last7d: null
+  latest: null
+  paywall: false
+  why: Full season calendar with race date and UTC start time per round - needed for "race at 1:30 am IST".
+  note: Checker cannot parse the JSON shape; curl returns 200 with 23 races for 2026 (e.g. Las Vegas 2026-11-22 04:00Z). For FP/quali/sprint times use OpenF1 https://api.openf1.org/v1/sessions?year=2026 (curl 200, 131 sessions). Both keyless; Jolpica asks for <= 4 req/s.
+
+- topic: tennis-f1
+  name: r/formula1 (daily top)
+  tier: early-signal
+  kind: reddit
+  url: https://www.reddit.com/r/formula1/top/.rss?t=day
+  home: https://www.reddit.com/r/formula1/
+  verified: false
+  last7d: 25
+  latest: 2026-10-29
+  paywall: false
+  why: Technical photos, onboard comparisons and journalist tweets surface here before the sites write them up.
+  note: Reddit 429 - checker UA blocked; manual Chrome-UA fetch on 2026-10-30 returned 200 Atom with 25 entries. Use a browser UA and >=60 s spacing.
+
+- topic: tennis-f1
+  name: The Race
+  tier: early-signal
+  kind: rss
+  url: https://www.the-race.com/feed/
+  home: https://www.the-race.com/formula-1/
+  verified: true
+  last7d: 15
+  latest: 2026-10-29
+  paywall: false
+  why: Mark Hughes, Edd Straw, Gary Anderson and Scott Mitchell-Malm - the deepest technical and strategic F1 analysis available free.
+  note: All-series feed; keep links containing /formula-1/. No F1-only feed (404). Their main YouTube channel feed shows no uploads since 2026-05 - rely on the site.
+
+- topic: tennis-f1
+  name: The Race F1 Tech Show (podcast)
+  tier: early-signal
+  kind: podcast
+  url: https://feeds.acast.com/public/shows/6819af44f30c20bff7763093
+  home: https://www.the-race.com/podcasts/
+  verified: true
+  last7d: 1
+  latest: 2026-10-29
+  paywall: false
+  why: Gary Anderson (ex-Jordan technical director) explaining car upgrades and the 2026 regs - the technical explainer the user asked for.
+  note: The Race F1 Briefing feed is dormant (last 2024-12); skipped.
+
+- topic: tennis-f1
+  name: Mark Hughes (The Race, via Google News)
+  tier: early-signal
+  kind: gnews
+  url: https://news.google.com/rss/search?q=%22Mark+Hughes%22+site:the-race.com&hl=en-US&gl=US&ceid=US:en
+  home: https://www.the-race.com/author/mark-hughes/
+  verified: true
+  last7d: 0
+  latest: 2026-10-22
+  paywall: false
+  why: Isolates Hughes' race-strategy debriefs from the rest of The Race so they can be ranked up.
+  note: The Race has no per-author feed. Low frequency (a few a month); Google index lags by a day or two.
+
+- topic: tennis-f1
+  name: Joe Saward (joeblogsf1)
+  tier: early-signal
+  kind: rss
+  url: https://joesaward.wordpress.com/feed/
+  home: https://joesaward.wordpress.com/
+  verified: true
+  last7d: 2
+  latest: 2026-10-29
+  paywall: false
+  why: Paddock insider since the 1980s; driver-market and F1-business rumours weeks before they break.
+  note: The deeper "Green Notebook" columns are on his paid Patreon and GP+ e-magazine; the blog carries the free tier.
+
+- topic: tennis-f1
+  name: Peter Windsor (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCPwy2q7BNjdLYu1kM_OEJVw
+  home: https://www.youtube.com/peterwindsor
+  verified: true
+  last7d: 12
+  latest: 2026-10-29
+  paywall: false
+  why: Ex-team manager's post-session debriefs with driver-craft detail you do not get on broadcast.
+  note: High volume on race weekends (12/wk); rank below The Race.
+
+- topic: tennis-f1
+  name: Chain Bear (YouTube)
+  tier: early-signal
+  kind: youtube
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UC7u-Dg0jb7g9s7XjmtJrtpg
+  home: https://www.youtube.com/@chainbear
+  verified: true
+  last7d: 1
+  latest: 2026-10-29
+  paywall: false
+  why: Animated technical and regulatory explainers; the clearest primer when a rule or part is in the news.
+  note: Infrequent. KYLE.ENGINEERS (aero) last uploaded 2026-07-08, Driver61 2026-09-10 - both dropped as dormant. "Aldas Technical" could not be found on YouTube.
+
+- topic: tennis-f1
+  name: F1 Beyond The Grid (podcast)
+  tier: early-signal
+  kind: podcast
+  url: https://audioboom.com/channels/4964339.rss
+  home: https://www.formula1.com/en/latest/tags/beyond-the-grid.2sFoSOg4bDmVsk5MFFBgS6
+  verified: true
+  last7d: 1
+  latest: 2026-10-28
+  paywall: false
+  why: Tom Clarkson's long-form interviews with drivers, engineers and principals - official but candid.
+  note: ""
+
+- topic: tennis-f1
+  name: Autosport - Formula 1
+  tier: mainstream
+  kind: rss
+  url: https://www.autosport.com/rss/feed/f1
+  home: https://www.autosport.com/f1/
+  verified: true
+  last7d: 36
+  latest: 2026-10-29
+  paywall: false
+  why: The trade paper of record; Jonathan Noble's reporting and Giorgio Piola tech illustrations.
+  note: Motorsport.com F1 (https://www.motorsport.com/rss/f1/news/, 50/7d) is the same group with near-identical content; pick one.
+
+- topic: tennis-f1
+  name: RaceFans
+  tier: mainstream
+  kind: rss
+  url: https://www.racefans.net/feed/
+  home: https://www.racefans.net/
+  verified: true
+  last7d: 20
+  latest: 2026-10-29
+  paywall: false
+  why: Independent, detail-oriented confirmation feed with full race-weekend data and FIA document coverage.
+  note: BBC F1 https://feeds.bbci.co.uk/sport/formula1/rss.xml also verified (18/7d) if a third is wanted.
+
+
+# ============================================================ cluster: ai-tools and startups (added 2026-11-04)
+# All verified: true rows passed sources/checkfeed.py on 2026-11-04; last7d / latest are checker values.
+
+# ---------------------------------------------------------------- ai-tools
+- topic: ai-tools
+  name: TestingCatalog AI News
+  tier: early-signal
+  kind: rss
+  url: https://www.testingcatalog.com/rss/
+  home: https://www.testingcatalog.com/
+  verified: true
+  last7d: 13
+  latest: 2026-11-03
+  paywall: false
+  why: "Early sightings of unreleased ChatGPT, Gemini, Claude and Grok features; closest feed to @evolving.ai."
+  note: ""
+
+- topic: ai-tools
+  name: The Neuron
+  tier: mainstream
+  kind: atom
+  url: https://www.theneuron.ai/feed
+  home: https://www.theneuron.ai/
+  verified: true
+  last7d: 10
+  latest: 2026-11-04
+  paywall: false
+  why: "AI tools and demos in plain language."
+  note: ""
+
+- topic: ai-tools
+  name: The Decoder
+  tier: mainstream
+  kind: rss
+  url: https://the-decoder.com/feed/
+  home: https://the-decoder.com/
+  verified: true
+  last7d: 10
+  latest: 2026-11-03
+  paywall: false
+  why: "Image, video and voice model releases covered quickly."
+  note: ""
+
+- topic: ai-tools
+  name: MarkTechPost
+  tier: mainstream
+  kind: rss
+  url: https://www.marktechpost.com/feed/
+  home: https://www.marktechpost.com/
+  verified: true
+  last7d: 10
+  latest: 2026-11-04
+  paywall: false
+  why: "Model and research releases; medium signal, filter by title."
+  note: ""
+
+# retag of existing sources under ai-tools (same url as the ai-built entries; load dedupes by url)
+- topic: ai-tools
+  name: Product Hunt - Artificial Intelligence
+  tier: primary
+  kind: atom
+  url: https://www.producthunt.com/feed?category=artificial-intelligence
+  home: https://www.producthunt.com/topics/artificial-intelligence
+  verified: true
+  last7d: 33
+  latest: 2026-10-28
+  paywall: false
+  why: The day's AI product launches with vote counts; the consumer-side counterpart to Show HN.
+  note: The topic page itself returns 403 to bots; use the feed URL only.
+
+- topic: ai-tools
+  name: Ben's Bites
+  tier: early-signal
+  kind: rss
+  url: https://www.bensbites.com/feed
+  home: https://www.bensbites.com/
+  verified: true
+  last7d: 2
+  latest: 2026-10-29
+  paywall: false
+  why: "Builder-focused newsletter: new tools, what people are shipping with them, and hands-on tutorials."
+  note: ""
+
+- topic: ai-tools
+  name: The Rundown AI
+  tier: mainstream
+  kind: rss
+  url: https://www.therundown.ai/feed
+  home: https://www.therundown.ai/
+  verified: true
+  last7d: 9
+  latest: 2026-10-29
+  paywall: false
+  why: Largest mass-market AI newsletter; if a tool is here it has already gone viral, which makes it the "too late" baseline.
+  note: ""
+
+# ---------------------------------------------------------------- startups
+- topic: startups
+  name: TechCrunch Startups
+  tier: mainstream
+  kind: rss
+  url: https://techcrunch.com/category/startups/feed/
+  home: https://techcrunch.com/category/startups/
+  verified: true
+  last7d: 20
+  latest: 2026-11-03
+  paywall: false
+  why: "Startup funding and launches from the main tech desk."
+  note: ""
+
+- topic: startups
+  name: YourStory
+  tier: mainstream
+  kind: rss
+  url: https://yourstory.com/feed
+  home: https://yourstory.com/
+  verified: true
+  last7d: 20
+  latest: 2026-11-04
+  paywall: false
+  why: "Indian startup ecosystem coverage."
+  note: "Some sponsored content."
+
+- topic: startups
+  name: Sifted
+  tier: mainstream
+  kind: rss
+  url: https://sifted.eu/feed
+  home: https://sifted.eu/
+  verified: true
+  last7d: 24
+  latest: 2026-11-04
+  paywall: true
+  why: "European startup and VC coverage."
+  note: "Paywall teasers only."
+
+- topic: startups
+  name: Y Combinator Blog
+  tier: primary
+  kind: rss
+  url: https://www.ycombinator.com/blog/rss
+  home: https://www.ycombinator.com/blog
+  verified: true
+  last7d: 8
+  latest: 2026-10-30
+  paywall: false
+  why: "Direct from YC: founder advice and batch news."
+  note: ""
+
+- topic: startups
+  name: TLDR Founders
+  tier: mainstream
+  kind: rss
+  url: https://tldr.tech/api/rss/founders
+  home: https://tldr.tech/founders
+  verified: true
+  last7d: 4
+  latest: 2026-11-03
+  paywall: false
+  why: "Digest of startup and founder news."
+  note: ""
+
+- topic: startups
+  name: MIT Technology Review
+  tier: mainstream
+  kind: rss
+  url: https://www.technologyreview.com/feed/
+  home: https://www.technologyreview.com/
+  verified: true
+  last7d: 10
+  latest: 2026-11-03
+  paywall: false
+  why: "Emerging technology reporting with a startup angle."
+  note: ""
